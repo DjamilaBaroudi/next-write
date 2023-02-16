@@ -3,6 +3,7 @@ import { MdMenu } from 'react-icons/md'
 import { BsBell } from 'react-icons/bs'
 import { FiEdit } from 'react-icons/fi'
 import { CiSearch } from 'react-icons/ci'
+import { HiChevronDown } from 'react-icons/hi'
 const HomePage = () => {
   return (
     <div className="flex flex-col w-full h-screen">
@@ -26,9 +27,9 @@ const HomePage = () => {
       {/* This is for the body and sidebar */}
       <section className='grid grid-cols-12 place-items-center w-full h-full'>
         <main className='col-span-8 border-r border-gray-300 h-full w-full'>
-          <div className='flex flex-col space-y-4 w-full p-10'>
+          <div className='flex flex-col space-y-4 w-full px-24 py-10'>
             <div className='flex space-x-4 items-center w-full'>
-              <label htmlFor="search" className='relative w-full border-gray-300 border rounded'>
+              <label htmlFor="search" className='relative w-full border-gray-800 border rounded-3xl'>
                 <div className='absolute left-2 h-full flex items-center'>
                   <CiSearch />
                 </div>
@@ -36,22 +37,32 @@ const HomePage = () => {
                   type="text"
                   name="search"
                   id="search"
-                  className='outline-none  py-1 px-4 pl-8
-                  text-sm placeholder:text-xs placeholder:text-gray-300'
+                  className='outline-none py-1 px-4 pl-7 ml-2 my-0.5 text-sm placeholder:text-xs placeholder:text-gray-300'
                   placeholder='Search...' />
               </label>
-              <div className='flex items-center w-full'>
+              <div className='flex items-center w-full space-x-4 justify-end'>
                 <div>topics: </div>
                 <div className='flex space-x-2 items-center'>
                   {
                     Array.from({ length: 4 }).map((_, index) => (
-                      <div key={index} className='rounded-3xl bg-gray-200/50 p-4'>tag {index} </div>
+                      <div key={index} className='rounded-3xl bg-gray-200/50 px-4 py-3'>tag {index} </div>
                     ))
                   }
                 </div>
               </div>
             </div>
+            <div className='w-full justify-between flex items-center border-b pb-8 border-gray-300'>
+              <div> Articles </div>
+              <div>
+                <button className='flex font-semibold space-x-2 items-center border border-gray-800 rounded-3xl px-4 py-1.5'>
+                  <div> Following </div>
+                  <div className=' h-full flex items-center'> <HiChevronDown className='text-xl'/> </div>
+                </button>
+              </div>
+
+            </div>
           </div>
+
         </main>
         <aside className='col-span-4 h-full w-full'>
           {/* This is for sidebar */}
