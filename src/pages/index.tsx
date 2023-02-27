@@ -1,12 +1,10 @@
-import React, { useContext } from 'react'
+import React from 'react'
 import { CiSearch } from 'react-icons/ci'
 import { HiChevronDown } from 'react-icons/hi'
 import MainLayout from '../layouts/MainLayout'
-import Modal from '../components/Modal'
-import { GlobalContext } from '../contexts/GlobalContextProvider'
+import WriteFormModal from '../components/WriteFormModal'
 
 const HomePage = () => {
-  const {isWriteModalOpen, setIsWriteModalOpen} = useContext(GlobalContext);
   return (
     <MainLayout>
       {/* This is for the body and sidebar */}
@@ -139,11 +137,7 @@ const HomePage = () => {
           </div>
         </aside>
       </section >
-      <Modal isOpen={isWriteModalOpen} onClose={() => setIsWriteModalOpen(false)}>
-        <form action="" onSubmit={(e) => e.preventDefault()}>
-          here is our form!
-        </form>
-      </Modal>
+      <WriteFormModal/>
     </MainLayout >
   )
 }
