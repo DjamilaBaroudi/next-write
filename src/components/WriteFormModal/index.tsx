@@ -6,23 +6,33 @@ import { GlobalContext } from '../../contexts/GlobalContextProvider';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
+import { api } from '../../utils/api';
 
 type WriteFormType = {
     title: string;
     description: string;
-    body: string;
+    text: string;
 }
-const WriteFormSchema = z.object({
+export const WriteFormSchema = z.object({
     title: z.string().min(20),
     description: z.string().min(60),
-    body: z.string().min(100)
+    text: z.string().min(100)
 })
 const WriteFormModal = ({ }) => {
     const { isWriteModalOpen, setIsWriteModalOpen } = useContext(GlobalContext);
     const { register, handleSubmit, formState: { errors } } = useForm<WriteFormType>({
         resolver: zodResolver(WriteFormSchema)
     });
-    const onSubmit = (data: WriteFormType) => console.log(data);
+
+    const createPost = api.post.createPost.useMutation({
+        onSuccess: () => {
+            console.log('post successfuly created!')
+        }
+    })
+
+    const onSubmit = (data: WriteFormType) => {
+        createPost.mutate(data)
+    };
     return (
         <Modal isOpen={isWriteModalOpen} onClose={() => setIsWriteModalOpen(false)}>
             <form action="" onSubmit={handleSubmit(onSubmit)}
@@ -47,14 +57,14 @@ const WriteFormModal = ({ }) => {
                 <div className='w-full'>
                     <textarea
                         className='border rounded-xl border-gray-300 focus:border-gray-600 w-full p-4 outline-none'
-                        {...register('body')}
+                        {...register('text')}
                         id="mainBody"
                         cols={30}
                         rows={10}
                         placeholder="blog main body..."
                     >
                     </textarea>
-                    <p className='text-red-500 w-full text-left text-sm pb-2'> { errors.body?.message}</p>
+                    <p className='text-red-500 w-full text-left text-sm pb-2'> { errors.text?.message}</p>
                 </div>
                 <div className='flex justify-end w-full'>
                     <button type='submit'
