@@ -14,12 +14,6 @@ datasource db {
     url      = env("DATABASE_URL")
 }
 
-model Example {
-    id        String   @id @default(cuid())
-    createdAt DateTime @default(now())
-    updatedAt DateTime @updatedAt
-}
-
 // Necessary for Next auth
 model Account {
     id                String  @id @default(cuid())
@@ -48,13 +42,17 @@ model Session {
 }
 
 model User {
-    id            String    @id @default(cuid())
+    id            String     @id @default(cuid())
     name          String?
-    email         String?   @unique
+    email         String?    @unique
     emailVerified DateTime?
     image         String?
     accounts      Account[]
     sessions      Session[]
+    posts         Post[]
+    comments      Comment[]
+    likes         Like[]
+    bookmarks     Bookmark[]
 }
 
 model VerificationToken {
@@ -63,4 +61,69 @@ model VerificationToken {
     expires    DateTime
 
     @@unique([identifier, token])
+}
+
+model Post {
+    id            String     @id @default(cuid())
+    title         String     @unique
+    description   String
+    slug          String
+    text          String     @db.Text
+    html          String     @db.Text
+    featuredImage String?
+    authorId      String
+    created_at    DateTime   @default(now())
+    updated_at    DateTime   @updatedAt
+    tags          Tag[]
+    comments      Comment[]
+    likes         Like[]
+    bookmarks     Bookmark[]
+
+    author User @relation(fields: [authorId], references: [id])
+}
+
+model Tag {
+    id          String  @id @default(cuid())
+    name        String
+    description String?
+    slug        String  @unique
+    posts       Post[]
+}
+
+model Comment {
+    id         String   @unique @default(cuid())
+    text       String
+    userId     String
+    postId     String
+    created_at DateTime @default(now())
+    updated_at DateTime @updatedAt
+
+    user User @relation(fields: [userId], references: [id])
+    post Post @relation(fields: [postId], references: [id])
+}
+
+model Like {
+    id         String   @unique @default(cuid())
+    userId     String
+    postId     String
+    created_at DateTime @default(now())
+    updated_at DateTime @updatedAt
+
+    user User @relation(fields: [userId], references: [id])
+    post Post @relation(fields: [postId], references: [id])
+
+    @@unique([userId, postId])
+}
+
+model Bookmark {
+    id         String   @unique @default(cuid())
+    createdAt DateTime @default(now()) @map("created_at")
+    updatedAt DateTime @updatedAt @map("updated_at")
+    userId     String
+    postId     String
+
+    user User @relation(fields: [userId], references: [id])
+    post Post @relation(fields: [postId], references: [id])
+
+    @@unique([userId, postId])
 }
