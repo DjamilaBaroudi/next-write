@@ -1,10 +1,17 @@
+/* eslint-disable @typescript-eslint/no-unsafe-assignment */
+/* eslint-disable @typescript-eslint/no-unsafe-member-access */
+/* eslint-disable @typescript-eslint/no-unsafe-call */
+
 import React from 'react'
 import { CiSearch } from 'react-icons/ci'
 import { HiChevronDown } from 'react-icons/hi'
 import MainLayout from '../layouts/MainLayout'
 import WriteFormModal from '../components/WriteFormModal'
-
+import { api } from '../utils/api'
+import { AiOutlineLoading3Quarters } from 'react-icons/ai'
+import Image from 'next/image'
 const HomePage = () => {
+  const getPosts = api.post.getPosts.useQuery();
   return (
     <MainLayout>
       {/* This is for the body and sidebar */}
@@ -46,25 +53,43 @@ const HomePage = () => {
             </div>
           </div>
           <div className='flex flex-col justify-center space-y-4 w-full'>
-            {Array.from({ length: 5 }).map((_, idx) => (
-              < div key={idx} className='flex flex-col group space-y-8 pb-8 border-b border-gray-300 last:border-none'>
+            {getPosts.isLoading && <div className='w-full h-full flex items-center justify-center space-x-4'>
+              <div>
+                <AiOutlineLoading3Quarters size={'1rem'} color={'#5F2AF0'} className='animate-spin' />
+              </div>
+              <div>
+                Loading...
+              </div>
+
+            </div>}
+            {getPosts.isSuccess && getPosts.data.map((post) => (
+              < div key={post.id} className='flex flex-col group space-y-8 pb-8 border-b border-gray-300 last:border-none'>
                 <div className='flex w-full space-x-2 items-center'>
-                  <div className='rounded-full bg-gray-400 h-10 w-10'></div>
+                  <div className='rounded-full relative bg-gray-400 h-10 w-10'>
+                    {post.author.image &&
+                      <Image
+                        src={post.author.image}
+                        alt={post.author.name ?? ''}
+                        fill
+                        className='rounded-full'
+                      />}
+                  </div>
                   <div className='flex flex-col w-full'>
-                    <p className='font-semibold'>Djamila BAROUDI &#x2022; 17 Feb. 2023</p>
+                    <p className='font-semibold'>{post.author.name} &#x2022;
+                      <span className='mx-1'>
+                        {post.created_at.toDateString()}
+                      </span>
+                    </p>
                     <p className='text-sm'>Frontend Developer, learner & dreamer</p>
                   </div>
                 </div>
                 <div className='grid grid-cols-12 w-full min-h-[6rem] gap-4'>
                   <div className='col-span-8 flex flex-col space-y-4'>
-                    <p className='text-2xl font-bold group-hover:underline decoration-indigo-600 text-gray-800'>Lorem ipsum, dolor sit amet consectetur adipisicing elit. Tenetur atque voluptas tempore veritatis vitae ea! </p>
+                    <p className='text-2xl font-bold group-hover:underline decoration-indigo-600 text-gray-800'>
+                      {post.title}
+                    </p>
                     <p className='text-sm text-gray-500 break-words'>
-                      Lorem ipsum, dolor sit amet consectetur adipisicing elit.
-                      Ex pariatur expedita molestiae facilis non laboriosam.
-                      Optio magni, quidem possimus praesentium beatae nihil.
-                      Cum consectetur non aliquam nobis modi voluptate est quia qui magnam ipsam fugit sit,
-                      porro ipsa sint accusamus facilis voluptatum officiis ducimus, a quae provident?
-                      Fuga delectus deleniti laudantium inventore? Esse consequuntur alias deserunt eum suscipit similique voluptatum.
+                      {post.description}
                     </p>
                   </div>
                   <div
@@ -137,7 +162,7 @@ const HomePage = () => {
           </div>
         </aside>
       </section >
-      <WriteFormModal/>
+      <WriteFormModal />
     </MainLayout >
   )
 }
