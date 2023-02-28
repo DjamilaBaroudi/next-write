@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-floating-promises */
 /* eslint-disable @typescript-eslint/no-misused-promises */
 import React from 'react'
 import { useContext } from 'react';
@@ -7,6 +8,8 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
 import { api } from '../../utils/api';
+import toast from 'react-hot-toast';
+import { AiOutlineLoading3Quarters } from 'react-icons/ai';
 
 type WriteFormType = {
     title: string;
@@ -20,23 +23,38 @@ export const WriteFormSchema = z.object({
 })
 const WriteFormModal = ({ }) => {
     const { isWriteModalOpen, setIsWriteModalOpen } = useContext(GlobalContext);
-    const { register, handleSubmit, formState: { errors } } = useForm<WriteFormType>({
-        resolver: zodResolver(WriteFormSchema)
-    });
+    const {
+        reset,
+        register,
+        handleSubmit,
+        formState: { errors } } = useForm<WriteFormType>({
+            resolver: zodResolver(WriteFormSchema)
+        });
+    
+    const postRoute = api.useContext().post;
 
     const createPost = api.post.createPost.useMutation({
         onSuccess: () => {
-            console.log('post successfuly created!')
+            toast.success('post successfuly created!');
+            setIsWriteModalOpen(false);
+            reset();
+            postRoute.getPosts.invalidate();
+
         }
     })
 
     const onSubmit = (data: WriteFormType) => {
-        createPost.mutate(data)
+        createPost.mutate(data);
     };
     return (
         <Modal isOpen={isWriteModalOpen} onClose={() => setIsWriteModalOpen(false)}>
-            <form action="" onSubmit={handleSubmit(onSubmit)}
-                className='flex flex-col items-center justify-center w-full space-y-4'>
+            <form onSubmit={handleSubmit(onSubmit)}
+                className='flex relative flex-col items-center justify-center w-full space-y-4'>
+
+                {createPost.isLoading && <div className='absolute w-full h-full flex items-center justify-center'>
+                    <AiOutlineLoading3Quarters className='animate-spin' />
+                </div>}
+
                 <input
                     className='border rounded-xl border-gray-300 w-full p-4 outline-none focus:border-gray-600'
                     type="text"
@@ -44,7 +62,7 @@ const WriteFormModal = ({ }) => {
                     placeholder='Title'
                     {...register('title')}
                 />
-                <p className='text-red-500 w-full text-left text-sm pb-2'> { errors.title?.message}</p>
+                <p className='text-red-500 w-full text-left text-sm pb-2'> {errors.title?.message}</p>
 
                 <input
                     className='border rounded-xl border-gray-300 w-full p-4 outline-none focus:border-gray-600'
@@ -52,7 +70,7 @@ const WriteFormModal = ({ }) => {
                     {...register('description')}
                     id="shortDescription"
                     placeholder='Short Description about the blog' />
-                <p className='text-red-500 w-full text-left text-sm pb-2'> { errors.description?.message}</p>
+                <p className='text-red-500 w-full text-left text-sm pb-2'> {errors.description?.message}</p>
 
                 <div className='w-full'>
                     <textarea
@@ -64,7 +82,7 @@ const WriteFormModal = ({ }) => {
                         placeholder="blog main body..."
                     >
                     </textarea>
-                    <p className='text-red-500 w-full text-left text-sm pb-2'> { errors.text?.message}</p>
+                    <p className='text-red-500 w-full text-left text-sm pb-2'> {errors.text?.message}</p>
                 </div>
                 <div className='flex justify-end w-full'>
                     <button type='submit'
