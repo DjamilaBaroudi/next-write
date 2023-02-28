@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/restrict-template-expressions */
 /* eslint-disable @typescript-eslint/no-unsafe-assignment */
 /* eslint-disable @typescript-eslint/no-unsafe-member-access */
 /* eslint-disable @typescript-eslint/no-unsafe-call */
@@ -7,6 +8,7 @@ import { CiSearch } from 'react-icons/ci'
 import { HiChevronDown } from 'react-icons/hi'
 import Image from 'next/image'
 import { api } from '../../utils/api'
+import Link from 'next/link'
 
 const MainSection = () => {
     const getPosts = api.post.getPosts.useQuery();
@@ -59,7 +61,9 @@ const MainSection = () => {
 
                 </div>}
                 {getPosts.isSuccess && getPosts.data.map((post) => (
-                    < div key={post.id} className='flex flex-col group space-y-8 pb-8 border-b border-gray-300 last:border-none'>
+                    < Link href={`/${post.slug}`}
+                        key={post.id}
+                        className='flex flex-col group space-y-8 pb-8 border-b border-gray-300 last:border-none'>
                         <div className='flex w-full space-x-2 items-center'>
                             <div className='rounded-full relative bg-gray-400 h-10 w-10'>
                                 {post.author.image &&
@@ -103,7 +107,7 @@ const MainSection = () => {
                                 }
                             </div>
                         </div>
-                    </div>
+                    </Link>
                 ))}
             </div>
 

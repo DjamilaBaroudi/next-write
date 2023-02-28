@@ -3,6 +3,7 @@
 /* eslint-disable @typescript-eslint/no-unsafe-call */
 /* eslint-disable @typescript-eslint/no-unsafe-member-access */
 import slugify from "slugify";
+import { z } from "zod";
 import { WriteFormSchema } from "../../../components/WriteFormModal";
 import { createTRPCRouter, protectedProcedure, publicProcedure } from "../trpc";
 
@@ -34,14 +35,26 @@ export const postRouter = createTRPCRouter({
                             select: {
                                 name: true,
                                 image: true,
-                                
+
                             }
                         }
                     }
                 }
             );
             return posts;
-        }
-    )
+        }),
 
+    getPost: publicProcedure.input(
+        z.object({
+            slug: z.string()
+        })
+    ).query(
+        async ({ ctx: { prisma }, input: { slug } }) => {
+            const post = await prisma.post.findUnique({
+                where: {
+                    slug
+                },
+            })
+            return post
+        })
 })

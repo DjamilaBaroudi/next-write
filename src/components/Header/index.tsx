@@ -8,6 +8,7 @@ import { AiOutlineLogout, AiOutlineLogin } from 'react-icons/ai';
 import { signIn, signOut, useSession } from 'next-auth/react';
 
 import { GlobalContext } from '../../contexts/GlobalContextProvider';
+import Link from 'next/link'
 const Header = () => {
     const { status } = useSession();
     const { setIsWriteModalOpen } = useContext(GlobalContext);
@@ -15,7 +16,7 @@ const Header = () => {
         <header className='h-20 w-full flex flex-row justify-around items-center bg-white border-b-[1px] border-gray-300'>
             {/* This is for the header */}
             <div> <MdMenu className='text-2xl text-gray-600' /> </div>
-            <div className='font-thin text-xl'>Ultimate Blog</div>
+            <Link href={'/'} className='font-thin text-xl select-none cursor-pointer'>Ultimate Blog</Link>
             {status === 'authenticated' ? <div className='flex items-center space-x-4'>
                 <div> <BsBell className='text-2xl text-gray-600' /> </div>
                 <div className='bg-gray-500 w-5 h-5 rounded-full'></div>
