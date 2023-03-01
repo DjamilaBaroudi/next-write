@@ -1,12 +1,10 @@
-/* eslint-disable @typescript-eslint/no-floating-promises */
 import { useRouter } from 'next/router'
-import React, { useCallback, useState } from 'react'
+import React, { useCallback } from 'react'
 import { AiOutlineLoading3Quarters } from 'react-icons/ai';
 import { FcLike, FcLikePlaceholder } from 'react-icons/fc';
 import { BsChat } from 'react-icons/bs';
 import MainLayout from '../layouts/MainLayout';
 import { api } from '../utils/api';
-import { callbackify } from 'util';
 
 const PostPage = () => {
     const router = useRouter();
@@ -26,14 +24,14 @@ const PostPage = () => {
 
 
     const likePost = api.post.likePost.useMutation({
-        onSuccess: () => {
-            invalidateCurrentPost()
+        onSuccess: async() => {
+            await invalidateCurrentPost()
         }
     });
 
     const dislikePost = api.post.dislikePost.useMutation({
-        onSuccess: () => {
-            invalidateCurrentPost()
+        onSuccess: async () => {
+            await invalidateCurrentPost()
         }
     });
 

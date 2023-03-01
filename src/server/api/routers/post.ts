@@ -1,7 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unsafe-return */
-/* eslint-disable @typescript-eslint/no-unsafe-assignment */
-/* eslint-disable @typescript-eslint/no-unsafe-call */
-/* eslint-disable @typescript-eslint/no-unsafe-member-access */
 import slugify from "slugify";
 import { z } from "zod";
 import { WriteFormSchema } from "../../../components/WriteFormModal";
@@ -24,21 +20,32 @@ export const postRouter = createTRPCRouter({
         }
     ),
     getPosts: publicProcedure.query(
-        async ({ ctx: { prisma } }) => {
+        async ({ ctx: { prisma, session } }) => {
             const posts = await prisma.post.findMany(
                 {
                     orderBy: {
                         created_at: 'desc'
                     },
-                    include: {
+                    select: {
+                        title: true,
+                        description: true,
+                        slug: true,
+                        id: true,
+                        created_at: true,
                         author: {
                             select: {
                                 name: true,
                                 image: true,
-
                             }
-                        }
-                    }
+                        },
+                        bookmarks: session?.user.id ? {
+                            where: {
+                                userId: session?.user.id
+                            }
+                        } : false,
+
+                    },
+
                 }
             );
             return posts;
@@ -94,6 +101,37 @@ export const postRouter = createTRPCRouter({
                     userId_postId: {
                         postId: postId,
                         userId: session.user.id
+                    }
+                }
+            })
+        }
+    ),
+
+    bookmarkPost: protectedProcedure.input(
+        z.object({
+            postId: z.string()
+        })
+    ).mutation(
+        async ({ ctx: { prisma, session }, input: { postId } }) => {
+            await prisma.bookmark.create({
+                data: {
+                    userId: session.user.id,
+                    postId: postId
+                }
+            })
+        }
+    ),
+    removeBookmarkPost: protectedProcedure.input(
+        z.object({
+            postId: z.string()
+        })
+    ).mutation(
+        async ({ ctx: { prisma, session }, input: { postId } }) => {
+            await prisma.bookmark.delete({
+                where: {
+                    userId_postId: {
+                        userId: session.user.id,
+                        postId
                     }
                 }
             })
