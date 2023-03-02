@@ -10,7 +10,7 @@ type PostProps = RouterOutputs['post']['getPosts'][number];
 
 const Post = ({ ...post }: PostProps) => {
 
-    const [isBookmarked, setIsBookmarked] = useState(Boolean(post.bookmarks.length));
+    const [isBookmarked, setIsBookmarked] = useState(Boolean(post.bookmarks?.length));
     const bookmarkPost = api.post.bookmarkPost.useMutation({
         onSuccess: () => {
             setIsBookmarked((prev) => !prev)
