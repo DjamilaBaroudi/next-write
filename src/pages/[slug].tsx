@@ -7,6 +7,7 @@ import MainLayout from '../layouts/MainLayout';
 import { api } from '../utils/api';
 import CommentSideBar from '../components/CommentsSideBar';
 import WriteFormModal from '../components/WriteFormModal';
+import toast from 'react-hot-toast';
 
 const PostPage = () => {
     const router = useRouter();
@@ -27,13 +28,15 @@ const PostPage = () => {
     const likePost = api.post.likePost.useMutation({
         onSuccess: async () => {
             await invalidateCurrentPost()
-        }
+        },
+        onError: (error) => { toast.error(error.message) }
     });
 
     const dislikePost = api.post.dislikePost.useMutation({
         onSuccess: async () => {
             await invalidateCurrentPost()
-        }
+        },
+        onError: (error) => { toast.error(error.message) }
     });
     const [showCommentsSideBar, setShowCommentsSideBar] = useState(false);
 

@@ -10,7 +10,6 @@ import { z } from 'zod'
 import { api } from '../../utils/api';
 import toast from 'react-hot-toast';
 import { AiOutlineLoading3Quarters } from 'react-icons/ai';
-import MainLayout from '../../layouts/MainLayout';
 
 type WriteFormType = {
     title: string;

@@ -56,7 +56,7 @@ const MainSection = () => {
 
                 </div>}
                 {getPosts.isSuccess && getPosts.data.map((post) => (
-                    <Post key={post.id} {...post}  />
+                    <Post key={post.id} {...post} />
                 ))}
             </div>
 

@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-floating-promises */
 import Link from 'next/link'
 import Image from 'next/image'
 import React from 'react'
@@ -11,14 +12,19 @@ type PostProps = RouterOutputs['post']['getPosts'][number];
 const Post = ({ ...post }: PostProps) => {
 
     const [isBookmarked, setIsBookmarked] = useState(Boolean(post.bookmarks?.length));
+
+    const postRoute = api.useContext().post;
+
     const bookmarkPost = api.post.bookmarkPost.useMutation({
         onSuccess: () => {
             setIsBookmarked((prev) => !prev)
+            postRoute.getBookmarkedPosts.invalidate();
         }
     });
     const removeBookmarkPost = api.post.removeBookmarkPost.useMutation({
         onSuccess: () => {
             setIsBookmarked((prev) => !prev)
+            postRoute.getBookmarkedPosts.invalidate();
         }
     });
     return (

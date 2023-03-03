@@ -163,24 +163,59 @@ export const postRouter = createTRPCRouter({
     getComments: publicProcedure.input(
         z.object({
             postId: z.string()
-    })).query(
-        async({ ctx: { prisma }, input:{postId} }) => {
-            const comments = await prisma.comment.findMany({
+        })).query(
+            async ({ ctx: { prisma }, input: { postId } }) => {
+                const comments = await prisma.comment.findMany({
+                    orderBy: {
+                        created_at: 'desc'
+                    },
+                    where: {
+                        postId
+                    },
+                    select: {
+                        id: true,
+                        text: true,
+                        created_at: true,
+                        user: {
+                            select: {
+                                image: true,
+                                name: true,
+                            }
+                        }
+                    }
+                })
+                return comments
+            }),
+    getBookmarkedPosts: protectedProcedure.query(
+        async ({ ctx: { prisma, session } }) => {
+            const allBookmarkedPosts = await prisma.bookmark.findMany({
                 where: {
-                    postId
+                    userId: session.user.id,
+                },
+                take: 4,
+                orderBy: {
+                    createdAt: 'desc'
                 },
                 select: {
                     id: true,
-                    text: true,
-                    created_at: true, 
-                    user: {
+                    post: {
                         select: {
-                            image: true, 
-                            name: true,
-                        }
-                    }
+                            title: true,
+                            description: true,
+                            created_at: true,
+                            slug: true,
+                            author: {
+                                select: {
+                                    name: true,
+                                    image: true,
+                                }
+                            }
+                        },
+                    },
+
                 }
             })
-        return comments
-    })
+            return allBookmarkedPosts
+        }
+    )
 })

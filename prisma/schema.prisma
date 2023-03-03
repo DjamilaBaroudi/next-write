@@ -91,7 +91,7 @@ model Tag {
 }
 
 model Comment {
-    id         String   @unique @default(cuid())
+    id         String   @unique @id @default(cuid())
     text       String
     userId     String
     postId     String
@@ -103,7 +103,7 @@ model Comment {
 }
 
 model Like {
-    id         String   @unique @default(cuid())
+    id         String   @unique @id @default(cuid())
     userId     String
     postId     String
     created_at DateTime @default(now())
@@ -116,7 +116,7 @@ model Like {
 }
 
 model Bookmark {
-    id         String   @unique @default(cuid())
+    id         String   @unique @id @default(cuid())
     createdAt DateTime @default(now()) @map("created_at")
     updatedAt DateTime @updatedAt @map("updated_at")
     userId     String
