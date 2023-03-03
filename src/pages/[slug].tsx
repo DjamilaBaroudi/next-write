@@ -6,6 +6,7 @@ import { BsChat } from 'react-icons/bs';
 import MainLayout from '../layouts/MainLayout';
 import { api } from '../utils/api';
 import CommentSideBar from '../components/CommentsSideBar';
+import WriteFormModal from '../components/WriteFormModal';
 
 const PostPage = () => {
     const router = useRouter();
@@ -84,6 +85,7 @@ const PostPage = () => {
                 </div>
             </div>
         </div>
+        <WriteFormModal />
     </MainLayout>
 }
 
