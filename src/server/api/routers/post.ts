@@ -1,3 +1,4 @@
+import { prisma } from "@prisma/client";
 import slugify from "slugify";
 import { z } from "zod";
 import { WriteFormSchema } from "../../../components/WriteFormModal";
@@ -158,5 +159,28 @@ export const postRouter = createTRPCRouter({
                 }
             }
         })
+    }),
+    getComments: publicProcedure.input(
+        z.object({
+            postId: z.string()
+    })).query(
+        async({ ctx: { prisma }, input:{postId} }) => {
+            const comments = await prisma.comment.findMany({
+                where: {
+                    postId
+                },
+                select: {
+                    id: true,
+                    text: true,
+                    created_at: true, 
+                    user: {
+                        select: {
+                            image: true, 
+                            name: true,
+                        }
+                    }
+                }
+            })
+        return comments
     })
 })

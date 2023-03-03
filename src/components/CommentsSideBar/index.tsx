@@ -8,6 +8,8 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
 import { api } from '../../utils/api'
 import { toast } from 'react-hot-toast'
+import moment from 'moment'
+import Image from 'next/image'
 
 type CommentSideBarProps = {
     showCommentsSideBar: boolean;
@@ -38,12 +40,14 @@ const CommentSideBar = ({
             toast.success('🥳')
             reset();
         },
-        onError: (error) => {toast.error(error.message) }
+        onError: (error) => { toast.error(error.message) }
     })
 
     const onSubmit = (data: CommentFormType) => {
         submitComment.mutate({ ...data, postId });
     };
+
+    const getComments = api.post.getComments.useQuery({ postId });
     return (
         <Transition.Root show={showCommentsSideBar} as={Fragment}>
             <Dialog as={'div'} onClose={() => setShowCommentsSideBar(false)}>
@@ -59,7 +63,7 @@ const CommentSideBar = ({
                         <Dialog.Panel className='relative w-[200px] sm:w-[480px] h-screen bg-white shadow-lg overflow-scroll'>
                             <div className='flex flex-col w-full px-6'>
                                 <div className='flex justify-between items-center mt-10 mb-5 w-full text-xl'>
-                                    <h2 className='font-medium'>Responses (4)</h2>
+                                    <h2 className='font-medium'>Responses ({getComments.data?.length})</h2>
                                     <div >
                                         <AiOutlineClose className='cursor-pointer' onClick={() => setShowCommentsSideBar(false)} />
                                     </div>
@@ -84,21 +88,28 @@ const CommentSideBar = ({
                                     </div>
                                 </form>
                                 <div className='flex flex-col items-center justify-center space-y-6'>
-                                    {Array.from({ length: 7 }).map((_, index) =>
-                                        <div className='h-full w-full flex flex-col space-y-2 border-b border-b-gray-200 last:border-none pb-4' key={index}>
+                                    {getComments.isSuccess && getComments.data?.map((comment) =>
+                                        <div className='h-full w-full flex flex-col space-y-2 border-b border-b-gray-200 last:border-none pb-4' key={comment.id}>
                                             <div className='flex w-full space-x-2 items-center'>
-                                                <div className='flex-none rounded-full relative bg-gray-400 h-8 w-8'>
+                                                <div className='rounded-full relative bg-gray-400 h-8 w-8'>
+                                                    {comment.user.image &&
+                                                        <Image
+                                                            src={comment.user.image}
+                                                            alt={comment.user.name ?? ''}
+                                                            fill
+                                                            className='rounded-full'
+                                                        />}
                                                 </div>
                                                 <div className='flex flex-col w-full'>
-                                                    <p className='font-semibold'>Djamila baroudi</p>
+                                                    <p className='font-semibold'>{comment.user.name}</p>
                                                     <p className='text-sm text-gray-400'>
                                                         <span className='mx-1'>
-                                                            12 hours ago
+                                                            {moment(comment.created_at).fromNow()}
                                                         </span></p>
                                                 </div>
                                             </div>
-                                            <div className='text-sm text-gray-600'>
-                                                Lorem ipsum dolor sit amet consectetur adipisicing elit. Tempora eveniet voluptatibus ut incidunt architecto deleniti molestias voluptate, soluta dolor quas veniam vel amet possimus laborum odit alias dicta nesciunt. Libero!
+                                            <div className='text-sm text-gray-600 m-2'>
+                                                {comment.text}
                                             </div>
                                         </div>
                                     )}

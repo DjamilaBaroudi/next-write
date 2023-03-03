@@ -10,6 +10,7 @@ import { z } from 'zod'
 import { api } from '../../utils/api';
 import toast from 'react-hot-toast';
 import { AiOutlineLoading3Quarters } from 'react-icons/ai';
+import MainLayout from '../../layouts/MainLayout';
 
 type WriteFormType = {
     title: string;
@@ -30,7 +31,7 @@ const WriteFormModal = ({ }) => {
         formState: { errors } } = useForm<WriteFormType>({
             resolver: zodResolver(WriteFormSchema)
         });
-    
+
     const postRoute = api.useContext().post;
 
     const createPost = api.post.createPost.useMutation({
@@ -93,6 +94,8 @@ const WriteFormModal = ({ }) => {
                 </div>
             </form>
         </Modal>
+
+
     )
 }
 
