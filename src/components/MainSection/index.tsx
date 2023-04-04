@@ -1,3 +1,4 @@
+import { useRouter } from 'next/router'
 import React from 'react'
 import { AiOutlineLoading3Quarters } from 'react-icons/ai'
 import { CiSearch } from 'react-icons/ci'
@@ -7,7 +8,6 @@ import Post from '../Post'
 
 const MainSection = () => {
     const getPosts = api.post.getPosts.useQuery();
-
     return (
         <main className='col-span-8 border-r border-gray-300 h-full w-full px-24'>
             <div className='flex flex-col space-y-4 w-full py-10'>

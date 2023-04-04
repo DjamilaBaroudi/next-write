@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-unsafe-call */
 /* eslint-disable @typescript-eslint/no-floating-promises */
 /* eslint-disable @typescript-eslint/no-misused-promises */
-import React from 'react'
+import React, { useState } from 'react'
 import MainLayout from '../../layouts/MainLayout'
 import Image from 'next/image'
 import { useRouter } from 'next/router'
@@ -10,8 +10,23 @@ import { BiEdit } from 'react-icons/bi'
 import { RiShareForward2Fill } from 'react-icons/ri'
 import { toast } from 'react-hot-toast'
 import Post from '../../components/Post'
+import { useSession } from 'next-auth/react'
+
+
+
+/* const avatarFile = event.target.files[0]
+const { data, error } = await supabase
+  .storage
+  .from('avatars')
+  .upload('public/avatar1.png', avatarFile, {
+    cacheControl: '3600',
+    upsert: false
+  }) */
+
 const UserProfilePage = () => {
     const router = useRouter();
+    const currentUser = useSession();
+
     const userProfile = api.user.getUserProfile.useQuery({
         username: router.query.username as string
     }, {
@@ -22,6 +37,46 @@ const UserProfilePage = () => {
     }, {
         enabled: !!router.query.username
     })
+
+
+    const [objectImage, setobjectImage] = useState('');
+
+    const userRoute = api.useContext().user
+
+    const uploadAvatar = api.user.uploadAvatar.useMutation({
+        onSuccess: () => {
+            if (userProfile.data?.username) {
+                userRoute.getUserProfile.invalidate({
+                    username: router.query.username as string
+                })
+            }
+        }
+    });
+
+    const handleChangeImage = (e: React.ChangeEvent<HTMLInputElement>) => {
+        if (e.target.files?.length && e.target.files[0]) {
+            const file = e.target.files[0];
+
+            if (file.size > 1 * 1000000) {
+                return toast.error("Image size shoudn\'t be greater than 1MB")
+            }
+
+            setobjectImage(URL.createObjectURL(file));
+
+            const fileReader = new FileReader();
+
+            fileReader.readAsDataURL(file);
+
+            fileReader.onloadend = () => {
+                if (fileReader.result && userProfile.data?.username) {
+                    uploadAvatar.mutate({
+                        imageAsDataUrl: fileReader.result as string,
+                        username: userProfile.data?.username
+                    })
+                }
+            }
+        }
+    }
     return (
         <MainLayout>
             <div className='w-full h-full flex justify-center items-center '>
@@ -29,19 +84,33 @@ const UserProfilePage = () => {
                     <div className='bg-white rounded-3xl flex flex-col w-full shadow-md'>
                         <div className='relative h-44 w-full rounded-t-3xl bg-gradient-to-br from-yellow-100 via-pink-200 to-purple-100'>
                             <div className='absolute -bottom-10 left-12'>
-                                <div className='relative w-28 h-28 rounded-full bg-gradient-to-br from-yellow-100 via-pink-100 to-purple-50 border group border-3 border-purple-200 shadow-xl cursor-pointer'>
-                                    <label htmlFor='avatarFile' className='absolute cursor-pointer flex justify-center items-center group-hover:bg-black/10 z-10 rounded-full w-full h-full transition duration-500'>
-                                        <BiEdit className='text-3xl text-white hidden group-hover:block' />
-                                        <input
-                                            type="file"
-                                            name='avatarFile'
-                                            id='avatarFile'
-                                            className='sr-only'
-                                            accept='image/*'
-                                        />
-                                    </label>
-                                    {userProfile.data?.image && <Image fill src={userProfile.data?.image} alt={userProfile.data?.name ?? ''} className='rounded-full'>
-                                    </Image>}
+                                <div className='relative w-28 h-28 rounded-full bg-gradient-to-br from-yellow-100 via-pink-100 to-purple-50 border group border-3 border-purple-200 shadow-xl'>
+                                    {userProfile.data?.id === currentUser.data?.user.id &&
+                                        <label htmlFor='avatarFile' className='absolute cursor-pointer flex justify-center items-center group-hover:bg-black/10 z-10 rounded-full w-full h-full transition duration-500'>
+                                            <BiEdit className='text-3xl text-white hidden group-hover:block' />
+                                            <input
+                                                type="file"
+                                                name='avatarFile'
+                                                id='avatarFile'
+                                                className='sr-only'
+                                                accept='image/*'
+                                                onChange={handleChangeImage}
+                                                multiple={false}
+                                            />
+                                        </label>
+                                    }
+                                    {!objectImage && userProfile.data?.image &&
+                                        <Image
+                                            fill
+                                            src={userProfile.data?.image}
+                                            alt={userProfile.data?.name ?? ''} className='rounded-full'>
+                                        </Image>}
+                                    {objectImage &&
+                                        <Image
+                                            fill
+                                            src={objectImage}
+                                            alt={userProfile.data?.name ?? ''} className='rounded-full'>
+                                        </Image>}
                                 </div>
                             </div>
                         </div>
@@ -70,7 +139,7 @@ const UserProfilePage = () => {
                     </div>
                     <div className='w-full my-14'>
                         {getUserPosts.isSuccess && getUserPosts.data?.posts.map((post) =>
-                            <Post key={post.id} {...post}/>
+                            <Post key={post.id} {...post} />
                         )
                         }
                     </div>
