@@ -1,3 +1,6 @@
+/* eslint-disable @typescript-eslint/restrict-template-expressions */
+/* eslint-disable @typescript-eslint/no-unsafe-assignment */
+/* eslint-disable @typescript-eslint/no-unsafe-member-access */
 /* eslint-disable @typescript-eslint/no-floating-promises */
 import Link from 'next/link'
 import Image from 'next/image'
@@ -28,40 +31,40 @@ const Post = ({ ...post }: PostProps) => {
         }
     });
     return (
-        < div
-            className='flex flex-col group space-y-8 pb-8 border-b border-gray-300 last:border-none'>
-            <Link href={`/${post.slug}`}>
-                <div className='flex w-full space-x-2 items-center'>
-                    <div className='rounded-full relative bg-gray-400 h-10 w-10'>
-                        {post.author.image &&
-                            <Image
-                                src={post.author.image}
-                                alt={post.author.name ?? ''}
-                                fill
-                                className='rounded-full'
-                            />}
-                    </div>
-                    <div className='flex flex-col w-full'>
-                        <p className='font-semibold'>{post.author.name} &#x2022;
-                            <span className='mx-1'>
-                                {post.created_at.toDateString()}
-                            </span>
-                        </p>
-                        <p className='text-sm'>Frontend Developer, learner & dreamer</p>
-                    </div>
+        < div key={post.id}
+            className='flex flex-col space-y-8 pb-8 border-b border-gray-300 last:border-none'>
+
+            <Link href={`/user/${post.author.username}`} className='group flex w-full space-x-2 items-center cursor-pointer'>
+                <div className='rounded-full relative bg-gray-400 h-10 w-10'>
+                    {post.author.image &&
+                        <Image
+                            src={post.author.image}
+                            alt={post.author.name ?? ''}
+                            fill
+                            className='rounded-full'
+                        />}
                 </div>
-                <div className='grid grid-cols-12 w-full min-h-[6rem] gap-4'>
+                <div className='flex flex-col w-full'>
+                    <p className='font-semibold'>
+                        <span className='group-hover:underline decoration-indigo-600'>{post.author.name}</span>{" "} &#x2022;
+                        <span className='mx-1'>
+                            {post.created_at.toDateString()}
+                        </span>
+                    </p>
+                    <p className='text-sm'>Frontend Developer, learner & dreamer</p>
+                </div>
+            </Link>
+            <Link href={`/${post.slug}`}>
+                <div className='group grid grid-cols-12 w-full min-h-[6rem] gap-4'>
                     <div className='col-span-8 flex flex-col space-y-4'>
                         <p className='text-2xl font-bold group-hover:underline decoration-indigo-600 text-gray-800'>
                             {post.title}
                         </p>
-                        <p className='text-sm text-gray-500 break-words'>
+                        <p className='text-sm text-gray-500 break-words truncate'>
                             {post.description}
                         </p>
                     </div>
-                    <div
-                        className='col-span-4 w-full h-full 
-rounded-xl transition hover:scale-105 transform duration-300 hover:shadow-xl'>
+                    <div className='col-span-4 w-full h-full rounded-xl transition hover:scale-105 transform duration-300 hover:shadow-xl'>
                         <div className='bg-gray-300 w-full h-full rounded-xl'> </div>
                     </div>
                 </div>

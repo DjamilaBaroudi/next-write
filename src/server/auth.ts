@@ -1,3 +1,6 @@
+/* eslint-disable @typescript-eslint/no-unsafe-argument */
+/* eslint-disable @typescript-eslint/no-unsafe-member-access */
+/* eslint-disable @typescript-eslint/no-unsafe-assignment */
 import type { GetServerSidePropsContext } from "next";
 import {
   getServerSession,
@@ -8,6 +11,7 @@ import GoogleProvider from "next-auth/providers/google";
 import { PrismaAdapter } from "@next-auth/prisma-adapter";
 import { env } from "../env/server.mjs";
 import { prisma } from "./db";
+import { generateUsername } from "../utils/genarateUsername";
 
 /**
  * Module augmentation for `next-auth` types
@@ -50,6 +54,15 @@ export const authOptions: NextAuthOptions = {
     GoogleProvider({
       clientId: env.GOOGLE_CLIENT_ID,
       clientSecret: env.GOOGLE_CLIENT_SECRET,
+      profile(profile) {
+        return {
+          id: profile.sub,
+          name: profile.name,
+          image: profile.image,
+          email: profile.email,
+          username: generateUsername(profile.name),
+        }
+      },
     }),
     /**
      * ...add more providers here
@@ -74,3 +87,5 @@ export const getServerAuthSession = (ctx: {
 }) => {
   return getServerSession(ctx.req, ctx.res, authOptions);
 };
+
+
