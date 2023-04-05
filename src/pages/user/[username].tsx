@@ -13,16 +13,6 @@ import Post from '../../components/Post'
 import { useSession } from 'next-auth/react'
 
 
-
-/* const avatarFile = event.target.files[0]
-const { data, error } = await supabase
-  .storage
-  .from('avatars')
-  .upload('public/avatar1.png', avatarFile, {
-    cacheControl: '3600',
-    upsert: false
-  }) */
-
 const UserProfilePage = () => {
     const router = useRouter();
     const currentUser = useSession();
@@ -48,7 +38,8 @@ const UserProfilePage = () => {
             if (userProfile.data?.username) {
                 userRoute.getUserProfile.invalidate({
                     username: router.query.username as string
-                })
+                });
+                toast.success('Avatar successfully updated 🎉')
             }
         }
     });
