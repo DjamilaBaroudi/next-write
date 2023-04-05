@@ -14,8 +14,6 @@ const Header = () => {
     const { status } = useSession();
     const { setIsWriteModalOpen } = useContext(GlobalContext);
 
-
-
     const currentUser = useSession();
 
     return (
