@@ -1,13 +1,12 @@
 import { TRPCError } from '@trpc/server'
 import slugify from 'slugify'
-import { z } from 'zod'
 import { createTRPCRouter, protectedProcedure } from '../trpc'
 import { TagFormSchema } from '../../../components/TagForm'
 
 export const tagRouter = createTRPCRouter({
     createTag: protectedProcedure.input(
         TagFormSchema
-    ).mutation(async ({ ctx: { prisma, session }, input }) => {
+    ).mutation(async ({ ctx: { prisma }, input }) => {
         const tag = await prisma.tag.findUnique({
             where: {
                 name: input.name

@@ -1,5 +1,3 @@
-/* eslint-disable @typescript-eslint/no-misused-promises */
-
 import React, { useState } from 'react'
 import { useContext } from 'react';
 import Modal from '../Modal'

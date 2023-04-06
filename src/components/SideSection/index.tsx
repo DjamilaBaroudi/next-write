@@ -1,5 +1,3 @@
-/* eslint-disable @typescript-eslint/no-floating-promises */
-/* eslint-disable @typescript-eslint/no-unsafe-call */
 import React from "react";
 import { api } from "../../utils/api";
 import Image from "next/image";

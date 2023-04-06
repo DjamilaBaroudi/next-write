@@ -1,7 +1,3 @@
-/* eslint-disable @typescript-eslint/restrict-template-expressions */
-/* eslint-disable @typescript-eslint/no-unsafe-call */
-/* eslint-disable @typescript-eslint/no-unsafe-argument */
-
 import { createTRPCRouter, protectedProcedure, publicProcedure } from "../trpc"
 import { z } from 'zod'
 import { decode } from 'base64-arraybuffer'

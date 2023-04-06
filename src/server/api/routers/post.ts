@@ -1,4 +1,3 @@
-import { prisma } from "@prisma/client";
 import slugify from "slugify";
 import { z } from "zod";
 import { WriteFormSchema } from "../../../components/WriteFormModal";
