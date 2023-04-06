@@ -68,9 +68,9 @@ model Post {
     id            String     @id @default(cuid())
     title         String     @unique
     description   String
-    slug          String      @unique
-    text          String?     @db.Text
-    html          String?     @db.Text
+    slug          String     @unique
+    text          String?    @db.Text
+    html          String?    @db.Text
     featuredImage String?
     authorId      String
     created_at    DateTime   @default(now())
@@ -85,14 +85,14 @@ model Post {
 
 model Tag {
     id          String  @id @default(cuid())
-    name        String
+    name        String  @unique
     description String?
     slug        String  @unique
     posts       Post[]
 }
 
 model Comment {
-    id         String   @unique @id @default(cuid())
+    id         String   @id @unique @default(cuid())
     text       String
     userId     String
     postId     String
@@ -104,7 +104,7 @@ model Comment {
 }
 
 model Like {
-    id         String   @unique @id @default(cuid())
+    id         String   @id @unique @default(cuid())
     userId     String
     postId     String
     created_at DateTime @default(now())
@@ -117,11 +117,11 @@ model Like {
 }
 
 model Bookmark {
-    id         String   @unique @id @default(cuid())
+    id        String   @id @unique @default(cuid())
     createdAt DateTime @default(now()) @map("created_at")
     updatedAt DateTime @updatedAt @map("updated_at")
-    userId     String
-    postId     String
+    userId    String
+    postId    String
 
     user User @relation(fields: [userId], references: [id])
     post Post @relation(fields: [postId], references: [id])

@@ -1,6 +1,6 @@
-/* eslint-disable @typescript-eslint/no-floating-promises */
 /* eslint-disable @typescript-eslint/no-misused-promises */
-import React from 'react'
+
+import React, { useState } from 'react'
 import { useContext } from 'react';
 import Modal from '../Modal'
 import { GlobalContext } from '../../contexts/GlobalContextProvider';
@@ -11,6 +11,7 @@ import { api } from '../../utils/api';
 import toast from 'react-hot-toast';
 import { AiOutlineLoading3Quarters } from 'react-icons/ai';
 import TagsAutocompletion from '../TagsAutocompletion';
+import TagForm from '../TagForm';
 
 type WriteFormType = {
     title: string;
@@ -22,8 +23,12 @@ export const WriteFormSchema = z.object({
     description: z.string().min(60),
     text: z.string().min(100)
 })
+
+
 const WriteFormModal = ({ }) => {
     const { isWriteModalOpen, setIsWriteModalOpen } = useContext(GlobalContext);
+    const [isTagModalOpen, setIsTagModalOpen] = useState(false);
+
     const {
         reset,
         register,
@@ -32,6 +37,7 @@ const WriteFormModal = ({ }) => {
             resolver: zodResolver(WriteFormSchema)
         });
 
+
     const postRoute = api.useContext().post;
 
     const createPost = api.post.createPost.useMutation({
@@ -39,6 +45,7 @@ const WriteFormModal = ({ }) => {
             toast.success('post successfuly created!');
             setIsWriteModalOpen(false);
             reset();
+            // eslint-disable-next-line @typescript-eslint/no-floating-promises
             postRoute.getPosts.invalidate();
 
         }
@@ -47,17 +54,25 @@ const WriteFormModal = ({ }) => {
     const onSubmit = (data: WriteFormType) => {
         createPost.mutate(data);
     };
+
     return (
+
         <Modal isOpen={isWriteModalOpen} onClose={() => setIsWriteModalOpen(false)}>
+            <TagForm
+                isOpen={isTagModalOpen}
+                onClose={() => setIsTagModalOpen(false)}
+            />
+
             <div className='my-4 flex w-full items-center justify-center space-x-4'>
                 <div className='z-10 w-4/5'>
                     <TagsAutocompletion />
                 </div>
-                    <button type='submit'
-                        className='whitespace-nowrap rounded px-4 py-2 space-x-3 border border-gray-200
+                <button type='submit'
+                    onClick={() => setIsTagModalOpen(true)}
+                    className='whitespace-nowrap rounded px-4 py-2 space-x-3 border border-gray-200
                                     transition hover:border-gray-900 hover:text-gray-900'>
-                        New tag
-                    </button>
+                    New tag
+                </button>
             </div>
 
             <form onSubmit={handleSubmit(onSubmit)}
@@ -105,7 +120,6 @@ const WriteFormModal = ({ }) => {
                 </div>
             </form>
         </Modal>
-
 
     )
 }
