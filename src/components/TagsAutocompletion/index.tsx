@@ -38,7 +38,7 @@ export default function TagsAutocompletion() {
                     <div className="relative w-full cursor-default overflow-hidden rounded-lg bg-white text-left shadow-md focus:outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-opacity-75 focus-visible:ring-offset-2 focus-visible:ring-offset-gray-300 sm:text-sm">
                         <Combobox.Input
                             className="w-full outline-none border-none py-2 pl-3 pr-10 text-sm leading-5 text-gray-900 focus:ring-0"
-                            displayValue={(t) => t.text}
+                            displayValue={(t:{name:string}) => t.name}
                             onChange={(event) => setQuery(event.target.value)}
                         />
                         <Combobox.Button className="absolute inset-y-0 right-0 flex items-center pr-2">

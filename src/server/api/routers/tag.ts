@@ -1,7 +1,8 @@
 import { TRPCError } from '@trpc/server'
 import slugify from 'slugify'
-import { createTRPCRouter, protectedProcedure } from '../trpc'
+import { createTRPCRouter, protectedProcedure, publicProcedure } from '../trpc'
 import { TagFormSchema } from '../../../components/TagForm'
+import { z } from 'zod'
 
 export const tagRouter = createTRPCRouter({
     createTag: protectedProcedure.input(
@@ -19,6 +20,34 @@ export const tagRouter = createTRPCRouter({
             data: {
                 ...input,
                 slug: slugify(input.name)
+            }
+        })
+    }),
+    getTagsForPost: publicProcedure.input(
+        z.object({
+            posId: z.string(),
+        })
+    ).query(async ({ ctx: { prisma }, input }) => {
+        return await prisma.post.findUnique({
+            where: {
+                id: input.posId,
+            },
+            select: {
+                tags: {
+                    select: {
+                        name: true, 
+                        description: true,
+                    }
+                }
+            }
+        })
+    }),
+    getAllTags: publicProcedure.query(async ({ctx: { prisma }}) => {
+        return await prisma.tag.findMany({
+            select: {
+                id: true,
+                name: true,
+                description: true,
             }
         })
     })
