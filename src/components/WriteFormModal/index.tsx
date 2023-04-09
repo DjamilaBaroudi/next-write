@@ -53,25 +53,30 @@ const WriteFormModal = ({ }) => {
         createPost.mutate(data);
     };
 
+    const getTags = api.tag.getAllTags.useQuery();
+
     return (
 
         <Modal isOpen={isWriteModalOpen} onClose={() => setIsWriteModalOpen(false)}>
-            <TagForm
-                isOpen={isTagModalOpen}
-                onClose={() => setIsTagModalOpen(false)}
-            />
+            {getTags.isSuccess &&
+                <>
+                    <TagForm
+                        isOpen={isTagModalOpen}
+                        onClose={() => setIsTagModalOpen(false)}
+                    />
 
-            <div className='my-4 flex w-full items-center justify-center space-x-4'>
-                <div className='z-10 w-4/5'>
-                    <TagsAutocompletion />
-                </div>
-                <button type='submit'
-                    onClick={() => setIsTagModalOpen(true)}
-                    className='whitespace-nowrap rounded px-4 py-2 space-x-3 border border-gray-200
+                    <div className='my-4 flex w-full items-center justify-center space-x-4'>
+                        <div className='z-10 w-4/5'>
+                            <TagsAutocompletion />
+                        </div>
+                        <button type='submit'
+                            onClick={() => setIsTagModalOpen(true)}
+                            className='whitespace-nowrap rounded px-4 py-2 space-x-3 border border-gray-200
                                     transition hover:border-gray-900 hover:text-gray-900'>
-                    New tag
-                </button>
-            </div>
+                            New tag
+                        </button>
+                    </div>
+                </>}
 
             <form onSubmit={handleSubmit(onSubmit)}
                 className='flex relative flex-col items-center justify-center w-full space-y-4'>

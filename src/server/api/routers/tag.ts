@@ -43,12 +43,6 @@ export const tagRouter = createTRPCRouter({
         })
     }),
     getAllTags: publicProcedure.query(async ({ctx: { prisma }}) => {
-        return await prisma.tag.findMany({
-            select: {
-                id: true,
-                name: true,
-                description: true,
-            }
-        })
+        return await prisma.tag.findMany()
     })
 })
