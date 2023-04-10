@@ -67,7 +67,7 @@ const WriteFormModal = ({ }) => {
 
                     <div className='my-4 flex w-full items-center justify-center space-x-4'>
                         <div className='z-10 w-4/5'>
-                            <TagsAutocompletion />
+                            <TagsAutocompletion tags={getTags.data}/>
                         </div>
                         <button type='submit'
                             onClick={() => setIsTagModalOpen(true)}

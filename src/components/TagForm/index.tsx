@@ -32,12 +32,15 @@ const TagForm = ({ isOpen, onClose }: TagActionsType) => {
     });
 
     //import the create tag 
+    const tagRoute = api.useContext().tag;
     const createTag = api.tag.createTag.useMutation({
         onSuccess: () => {
             toast.success('tag successfuly created!');
             onClose();
             reset();
             // eslint-disable-next-line @typescript-eslint/no-floating-promises
+            tagRoute.getAllTags.invalidate();
+
         }
 
     })
