@@ -5,16 +5,29 @@ import { createTRPCRouter, protectedProcedure, publicProcedure } from "../trpc";
 
 export const postRouter = createTRPCRouter({
     createPost: protectedProcedure.input(
-        WriteFormSchema
+        WriteFormSchema.and(
+            z.object({
+                tagID: z.string().optional()
+            })
+        )
     ).mutation(
-        async ({ ctx: { prisma, session }, input: { title, description, text } }) => {
+        async ({ ctx: { prisma, session }, input: { title, description, text, tagID } }) => {
             await prisma.post.create({
                 data: {
                     title,
                     text,
                     description,
                     slug: slugify(title),
-                    authorId: session.user.id
+                    author: {
+                        connect: {
+                            id: session.user.id
+                        }
+                    },
+                    tags: {
+                        connect: {
+                            id: tagID
+                        }
+                    }
                 }
             })
         }
@@ -44,9 +57,16 @@ export const postRouter = createTRPCRouter({
                                 userId: session?.user.id
                             }
                         } : false,
+                        tags: {
+                            select: {
+                                name: true,
+                                id: true,
+                                slug: true
+                            }
+                        }
 
                     },
-
+                    take: 10,
                 }
             );
             return posts;
@@ -217,5 +237,57 @@ export const postRouter = createTRPCRouter({
             })
             return allBookmarkedPosts
         }
-    )
-})
+    ),
+  /*   getTagedPosts: publicProcedure.input(
+        z.object(
+            {
+                tagID: z.string().optional()
+            })
+    ).query(
+        async ({ ctx: { prisma, session }, input: { tagID } }) => {
+            const posts = await prisma.post.findMany({
+                where: {
+                    tags: {
+                        
+                    }
+                },
+                select: {
+                    posts: {
+                        orderBy: {
+                            created_at: 'desc'
+                        },
+                        select: {
+                            title: true,
+                            description: true,
+                            slug: true,
+                            id: true,
+                            created_at: true,
+                            author: {
+                                select: {
+                                    name: true,
+                                    image: true,
+                                    username: true,
+                                }
+                            },
+                            bookmarks: session?.user.id ? {
+                                where: {
+                                    userId: session?.user.id
+                                }
+                            } : false,
+                            tags: {
+                                select: {
+                                    name: true,
+                                    id: true, 
+                                    slug: true,
+                                    description: true,
+                                }
+                            }
+                        }
+                    }
+                }
+                })
+                
+                return posts;
+            }),*/
+}) 
+

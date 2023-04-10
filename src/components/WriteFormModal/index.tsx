@@ -26,7 +26,7 @@ export const WriteFormSchema = z.object({
 const WriteFormModal = ({ }) => {
     const { isWriteModalOpen, setIsWriteModalOpen } = useContext(GlobalContext);
     const [isTagModalOpen, setIsTagModalOpen] = useState(false);
-
+    const [selectedTagID, setSelectedTagID] = useState('')
     const {
         reset,
         register,
@@ -50,7 +50,8 @@ const WriteFormModal = ({ }) => {
     })
 
     const onSubmit = (data: WriteFormType) => {
-        createPost.mutate(data);
+        const mutationData = selectedTagID !== '' ? {...data, tagID: selectedTagID} : data
+        createPost.mutate(mutationData);
     };
 
     const getTags = api.tag.getAllTags.useQuery();
@@ -67,7 +68,7 @@ const WriteFormModal = ({ }) => {
 
                     <div className='my-4 flex w-full items-center justify-center space-x-4'>
                         <div className='z-10 w-4/5'>
-                            <TagsAutocompletion tags={getTags.data}/>
+                            <TagsAutocompletion tags={getTags.data} setSelectedTagID={setSelectedTagID} />
                         </div>
                         <button type='submit'
                             onClick={() => setIsTagModalOpen(true)}

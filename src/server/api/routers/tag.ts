@@ -25,18 +25,20 @@ export const tagRouter = createTRPCRouter({
     }),
     getTagsForPost: publicProcedure.input(
         z.object({
-            posId: z.string(),
+            postId: z.string(),
         })
     ).query(async ({ ctx: { prisma }, input }) => {
         return await prisma.post.findUnique({
             where: {
-                id: input.posId,
+                id: input.postId,
             },
             select: {
                 tags: {
                     select: {
                         name: true, 
                         description: true,
+                        slug: true,
+                        id: true,
                     }
                 }
             }

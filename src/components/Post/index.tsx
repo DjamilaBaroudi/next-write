@@ -1,6 +1,3 @@
-/* eslint-disable @typescript-eslint/restrict-template-expressions */
-/* eslint-disable @typescript-eslint/no-unsafe-assignment */
-/* eslint-disable @typescript-eslint/no-unsafe-member-access */
 /* eslint-disable @typescript-eslint/no-floating-promises */
 import Link from 'next/link'
 import Image from 'next/image'
@@ -30,6 +27,9 @@ const Post = ({ ...post }: PostProps) => {
             postRoute.getBookmarkedPosts.invalidate();
         }
     });
+    const getTagsForPost = api.tag.getTagsForPost.useQuery({
+        postId: post.id,
+    })
     return (
         < div key={post.id}
             className='flex flex-col space-y-8 pb-8 border-b border-gray-300 last:border-none'>
@@ -72,8 +72,13 @@ const Post = ({ ...post }: PostProps) => {
             <div className='flex items-center w-full space-x-4 justify-between'>
                 <div className='flex space-x-2 items-center'>
                     {
-                        Array.from({ length: 4 }).map((_, index) => (
-                            <div key={index} className='rounded-2xl bg-gray-200/50 px-5 py-3'>tag {index} </div>
+                        getTagsForPost.isSuccess && getTagsForPost.data?.tags.map((tag) => (
+                            <Link href={`/tag/${tag.id}`} key={tag.id}
+                                onClick={()=> console.log('clicked')}
+                                className='rounded-2xl bg-gray-200/50 px-5 py-1.5 cursor-pointer'
+                            >
+                                {tag.name}
+                            </Link>
                         ))
                     }
                 </div>
