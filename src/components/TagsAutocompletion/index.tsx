@@ -1,16 +1,17 @@
-/* eslint-disable @typescript-eslint/no-unsafe-return */
+
 import React, { useMemo } from 'react'
 import { Fragment, useState } from 'react'
 import { Combobox, Transition } from '@headlessui/react'
 import { HiCheck } from 'react-icons/hi'
 import { HiChevronUpDown } from 'react-icons/hi2'
+import type { Tag } from '../WriteFormModal'
 
 type TagsAutoCompletionProps = {
-    tags: { id: string; name: string }[]
-    setSelectedTagID: React.Dispatch<React.SetStateAction<string>>
+    tags: Tag[]
+    setselectedTags: React.Dispatch<React.SetStateAction<Tag[]>>
+    selectedTags: Tag[]
 };
-
-export default function TagsAutocompletion({ tags, setSelectedTagID }: TagsAutoCompletionProps) {
+export default function TagsAutocompletion({ tags, setselectedTags, selectedTags }: TagsAutoCompletionProps) {
     const [selected, setSelected] = useState(tags[0])
     const [query, setQuery] = useState('')
 
@@ -25,9 +26,9 @@ export default function TagsAutocompletion({ tags, setSelectedTagID }: TagsAutoC
             )
     }, [query, tags])
     return (
-        <Combobox value={selected} onChange={(value) => {
-            setSelected(value)
-            setSelectedTagID(value.id)
+        <Combobox value={selected} onChange={(tag) => {
+            setSelected(tag)
+            setselectedTags(prev => prev.includes(tag) ? [...prev] : [...prev, tag])
         }
         }>
             <div className="relative">
@@ -61,7 +62,7 @@ export default function TagsAutocompletion({ tags, setSelectedTagID }: TagsAutoC
                                 <Combobox.Option
                                     key={tag.id}
                                     className={({ active }) =>
-                                        `relative cursor-default select-none py-2 pl-10 pr-4 ${active ? 'bg-gray-600 text-white' : 'text-gray-900'
+                                        `relative cursor-default select-none py-2 pl-10 pr-4 ${active ? 'bg-[#e5acb6] text-white' : 'text-gray-900'
                                         }`
                                     }
                                     value={tag}
@@ -74,12 +75,12 @@ export default function TagsAutocompletion({ tags, setSelectedTagID }: TagsAutoC
                                             >
                                                 {tag.name}
                                             </span>
-                                            {selected ? (
+                                            {selectedTags.includes(tag) ? (
                                                 <span
                                                     className={`absolute inset-y-0 left-0 flex items-center pl-3 ${active ? 'text-white' : 'text-gray-600'
                                                         }`}
                                                 >
-                                                    <HiCheck className="h-5 w-5" aria-hidden="true" />
+                                                    <HiCheck className="h-5 w-5" aria-hidden="true" color='#e5acb6' />
                                                 </span>
                                             ) : null}
                                         </>

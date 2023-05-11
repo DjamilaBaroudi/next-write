@@ -7,11 +7,15 @@ export const postRouter = createTRPCRouter({
     createPost: protectedProcedure.input(
         WriteFormSchema.and(
             z.object({
-                tagID: z.string().optional()
+                tagsIds: z.array(z.object(
+                    {
+                        id: z.string()
+                    }
+                )).optional()
             })
         )
     ).mutation(
-        async ({ ctx: { prisma, session }, input: { title, description, text, tagID } }) => {
+        async ({ ctx: { prisma, session }, input: { title, description, text, tagsIds } }) => {
             await prisma.post.create({
                 data: {
                     title,
@@ -24,9 +28,7 @@ export const postRouter = createTRPCRouter({
                         }
                     },
                     tags: {
-                        connect: {
-                            id: tagID
-                        }
+                        connect: tagsIds
                     }
                 }
             })

@@ -10,7 +10,11 @@ import toast from 'react-hot-toast';
 import { AiOutlineLoading3Quarters } from 'react-icons/ai';
 import TagsAutocompletion from '../TagsAutocompletion';
 import TagForm from '../TagForm';
+import { AiOutlineCloseCircle } from 'react-icons/ai'
 
+export type Tag = {
+    id: string; name: string,
+}
 type WriteFormType = {
     title: string;
     description: string;
@@ -26,7 +30,7 @@ export const WriteFormSchema = z.object({
 const WriteFormModal = ({ }) => {
     const { isWriteModalOpen, setIsWriteModalOpen } = useContext(GlobalContext);
     const [isTagModalOpen, setIsTagModalOpen] = useState(false);
-    const [selectedTagID, setSelectedTagID] = useState('')
+    const [selectedTags, setSelectedTags] = useState<Tag[]>([])
     const {
         reset,
         register,
@@ -50,7 +54,7 @@ const WriteFormModal = ({ }) => {
     })
 
     const onSubmit = (data: WriteFormType) => {
-        const mutationData = selectedTagID !== '' ? {...data, tagID: selectedTagID} : data
+        const mutationData = selectedTags.length !== 0 ? { ...data, tagsIds: selectedTags } : data
         createPost.mutate(mutationData);
     };
 
@@ -68,7 +72,11 @@ const WriteFormModal = ({ }) => {
 
                     <div className='my-4 flex w-full items-center justify-center space-x-4'>
                         <div className='z-10 w-4/5'>
-                            <TagsAutocompletion tags={getTags.data} setSelectedTagID={setSelectedTagID} />
+                            <TagsAutocompletion
+                                tags={getTags.data}
+                                setselectedTags={setSelectedTags}
+                                selectedTags={selectedTags}
+                            />
                         </div>
                         <button type='submit'
                             onClick={() => setIsTagModalOpen(true)}
@@ -76,6 +84,19 @@ const WriteFormModal = ({ }) => {
                                     transition hover:border-gray-900 hover:text-gray-900'>
                             New tag
                         </button>
+                    </div>
+                    <div className='flex flex-wrap w-full mb-3 items-center' >
+                        {selectedTags.map((selectedTag) =>
+                            <div className=' flex items-center px-4 py-2 m-2 rounded-3xl border whitespace-nowrap justify-center space-x-3  transition duration-200 hover:border-[#e5acb6]' key={selectedTag.id}>
+                                <div>{selectedTag.name}</div>
+                                <div className='flex-none'
+                                    onClick={() => { setSelectedTags(((prev) => prev.filter((currTag) => currTag !== selectedTag))) }}>
+                                    <AiOutlineCloseCircle
+                                        className='text-lg text-[#e5acb6] cursor-pointer ' />
+                                </div>
+                            </div>
+                        )
+                        }
                     </div>
                 </>}
 
