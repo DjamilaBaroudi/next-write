@@ -19,7 +19,7 @@ const Header = () => {
         <header className='h-20 w-full flex flex-row justify-around items-center bg-white border-b-[1px] border-gray-300'>
             {/* This is for the header */}
             <div> <MdMenu className='text-2xl text-gray-600' /> </div>
-            <Link href={'/'} className='font-thin text-xl select-none cursor-pointer'>Ultimate Blog</Link>
+            <Link href={'/'} className='font-thin text-xl select-none cursor-pointer'>Muslimah Chronicles</Link>
             {status === 'authenticated' ? <div className='flex items-center space-x-4'>
                 <div> <BsBell className='text-2xl text-gray-600' /> </div>
                 <div className='rounded-full relative bg-gray-400 h-7 w-7'>
