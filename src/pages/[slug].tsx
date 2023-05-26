@@ -11,7 +11,8 @@ import toast from 'react-hot-toast';
 import { RiComputerLine, RiImageEditLine, RiUnsplashFill } from 'react-icons/ri';
 import Modal from '../components/Modal';
 import UsplashImagesPanel from '../components/Unsplash';
-
+import { useSession } from 'next-auth/react';
+import Image from 'next/image';
 
 
 const PostPage = () => {
@@ -24,6 +25,8 @@ const PostPage = () => {
         }
     )
     const postRoute = api.useContext().post;
+
+    const { data } = useSession()
 
     const invalidateCurrentPost = useCallback(() => {
         return postRoute.getPost.invalidate({ slug: router.query.slug as string });
@@ -52,10 +55,13 @@ const PostPage = () => {
 
     return <MainLayout>
 
-        <UsplashImagesPanel
+        {getPost.isSuccess && getPost.data && <UsplashImagesPanel
             unsplashModalOpen={unsplashModalOpen}
-            setUnsplashModalOpen={setUnsplashModalOpen}></UsplashImagesPanel>
-        
+            setUnsplashModalOpen={setUnsplashModalOpen}
+            postId={getPost.data?.id}
+            slug={getPost.data.slug}
+        ></UsplashImagesPanel>}
+
         <Modal isOpen={selectImageModalOpen} onClose={() => setSelectImageModalOpen(false)}>
             <div className='w-full ml-auto mr-auto max-w-md flex flex-col justify-center p-4 items-center'>
                 <div className='w-full'>
@@ -111,10 +117,18 @@ const PostPage = () => {
         <div className='w-full h-full flex flex-col items-center justify-center p-10'>
             <div className='w-full max-w-screen-lg flex flex-col space-y-4'>
                 <div className='h-[60vh] rounded-xl bg-gray-300 w-full shadow-lg relative flex justify-center items-center'>
-                    <div onClick={() => setSelectImageModalOpen(true)}
+                    {getPost.isSuccess && getPost.data?.featuredImage &&
+                        <Image
+                            src={getPost.data?.featuredImage}
+                        alt={getPost.data?.title}
+                        fill
+                        className="rounded-xl"
+                    />
+                    }
+                    {data?.user.id === getPost.data?.authorId && (<div onClick={() => setSelectImageModalOpen(true)}
                         className='absolute top-2 z-10 left-2 text-3xl text-gray-700 bg-slate-200 cursor-pointer rounded-md p-2 transition duration-200 hover:bg-slate-500 hover:text-white'>
                         <RiImageEditLine />
-                    </div>
+                    </div>)}
                     <div className='absolute flex justify-center items-center w-full h-full'>
                         <div className='text-3xl text-center font-bold rounded-xl bg-neutral-800 bg-opacity-40 p-4 text-white'>
                             {getPost.data?.title}

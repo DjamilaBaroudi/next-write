@@ -2,6 +2,7 @@ import slugify from "slugify";
 import { z } from "zod";
 import { WriteFormSchema } from "../../../components/WriteFormModal";
 import { createTRPCRouter, protectedProcedure, publicProcedure } from "../trpc";
+import { TRPCError } from "@trpc/server";
 
 export const postRouter = createTRPCRouter({
     createPost: protectedProcedure.input(
@@ -93,7 +94,10 @@ export const postRouter = createTRPCRouter({
                         where: {
                             userId: session?.user.id
                         }
-                    } : false
+                    } : false,
+                    authorId: true,
+                    slug: true,
+                    featuredImage: true,
                 }
             })
             return post
@@ -240,6 +244,28 @@ export const postRouter = createTRPCRouter({
             return allBookmarkedPosts
         }
     ),
+    updatePostFeturedImage: protectedProcedure.input(
+        z.object({
+            imageUrl: z.string().url(),
+            postId: z.string()
+        })).mutation(async ({ctx: {prisma, session}, input:{imageUrl, postId}}) => {
+            const postData = await prisma.post.findUnique({
+                where: {
+                    id: postId
+                }
+            })
+            if (postData?.authorId !== session.user.id) {
+                throw new TRPCError({code: 'FORBIDDEN', message:'you are not the owner of this post'})
+            }
+             await prisma.post.update({
+                where: {
+                    id: postId
+                },
+                data: {
+                    featuredImage: imageUrl
+                }
+            })
+        })
   /*   getTagedPosts: publicProcedure.input(
         z.object(
             {
