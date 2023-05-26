@@ -11,6 +11,7 @@ import { AiOutlineLoading3Quarters } from 'react-icons/ai';
 import TagsAutocompletion from '../TagsAutocompletion';
 import TagForm from '../TagForm';
 import { AiOutlineCloseCircle } from 'react-icons/ai'
+import SubmitButton from '../Button';
 
 export type Tag = {
     id: string; name: string,
@@ -137,11 +138,7 @@ const WriteFormModal = ({ }) => {
                     <p className='text-red-500 w-full text-left text-sm pb-2'> {errors.text?.message}</p>
                 </div>
                 <div className='flex justify-end w-full'>
-                    <button type='submit'
-                        className='flex rounded items-center px-4 py-2 space-x-3 border border-gray-200
-                                    transition hover:border-gray-900 hover:text-gray-900'>
-                        Publish
-                    </button>
+                    <SubmitButton name="publish" />
                 </div>
             </form>
         </Modal>
