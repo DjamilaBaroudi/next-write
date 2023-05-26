@@ -8,6 +8,11 @@ import { api } from '../utils/api';
 import CommentSideBar from '../components/CommentsSideBar';
 import WriteFormModal from '../components/WriteFormModal';
 import toast from 'react-hot-toast';
+import { RiComputerLine, RiImageEditLine, RiUnsplashFill } from 'react-icons/ri';
+import Modal from '../components/Modal';
+import UsplashImagesPanel from '../components/Unsplash';
+
+
 
 const PostPage = () => {
     const router = useRouter();
@@ -38,9 +43,40 @@ const PostPage = () => {
         },
         onError: (error) => { toast.error(error.message) }
     });
+
     const [showCommentsSideBar, setShowCommentsSideBar] = useState(false);
+    const [selectImageModalOpen, setSelectImageModalOpen] = useState(false);
+    const [unsplashModalOpen, setUnsplashModalOpen] = useState(false);
+
+
 
     return <MainLayout>
+
+        <UsplashImagesPanel
+            unsplashModalOpen={unsplashModalOpen}
+            setUnsplashModalOpen={setUnsplashModalOpen}></UsplashImagesPanel>
+        
+        <Modal isOpen={selectImageModalOpen} onClose={() => setSelectImageModalOpen(false)}>
+            <div className='w-full ml-auto mr-auto max-w-md flex flex-col justify-center p-4 items-center'>
+                <div className='w-full'>
+                    <button className='w-full p-5 flex items-center justify-center my-2 bg-slate-200 border rounded-lg hover:bg-slate-300 transition duration-300'>
+                        <span> Computer </span>
+                        <span className='ml-4 text-lg'> <RiComputerLine /> </span>
+                    </button>
+                </div>
+                <div className='w-full'>
+                    <button onClick={() => {
+                        setUnsplashModalOpen(true),
+                            setSelectImageModalOpen(false)
+                    }}
+                        className='w-full p-5 flex items-center justify-center bg-slate-200 rounded-lg hover:bg-slate-300 transition duration-300'>
+                        <span> Unsplash </span>
+                        <span className='ml-4 text-xl'> <RiUnsplashFill /> </span>
+                    </button>
+                </div>
+            </div>
+        </Modal>
+
         {getPost.data?.id &&
             <CommentSideBar
                 showCommentsSideBar={showCommentsSideBar}
@@ -75,8 +111,12 @@ const PostPage = () => {
         <div className='w-full h-full flex flex-col items-center justify-center p-10'>
             <div className='w-full max-w-screen-lg flex flex-col space-y-4'>
                 <div className='h-[60vh] rounded-xl bg-gray-300 w-full shadow-lg relative flex justify-center items-center'>
+                    <div onClick={() => setSelectImageModalOpen(true)}
+                        className='absolute top-2 z-10 left-2 text-3xl text-gray-700 bg-slate-200 cursor-pointer rounded-md p-2 transition duration-200 hover:bg-slate-500 hover:text-white'>
+                        <RiImageEditLine />
+                    </div>
                     <div className='absolute flex justify-center items-center w-full h-full'>
-                        <div className='text-3xl font-bold rounded-xl bg-neutral-800 bg-opacity-40 p-4 text-white'>
+                        <div className='text-3xl text-center font-bold rounded-xl bg-neutral-800 bg-opacity-40 p-4 text-white'>
                             {getPost.data?.title}
                         </div></div>
                 </div>
