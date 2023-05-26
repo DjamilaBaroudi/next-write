@@ -48,6 +48,7 @@ export const postRouter = createTRPCRouter({
                         slug: true,
                         id: true,
                         created_at: true,
+                        featuredImage: true,
                         author: {
                             select: {
                                 name: true,

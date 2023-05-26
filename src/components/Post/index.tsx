@@ -60,12 +60,15 @@ const Post = ({ ...post }: PostProps) => {
                         <p className='text-2xl font-bold group-hover:underline decoration-indigo-600 text-gray-800'>
                             {post.title}
                         </p>
-                        <p className='text-sm text-gray-500 break-words truncate'>
+                        <p className='text-sm text-gray-500 break-words text-ellipsis'>
                             {post.description}
                         </p>
                     </div>
                     <div className='col-span-4 w-full h-full rounded-xl transition hover:scale-105 transform duration-300 hover:shadow-xl'>
-                        <div className='bg-gray-300 w-full h-full rounded-xl'> </div>
+                        {post.featuredImage ? <Image src={post.featuredImage} alt={post.title} className='rounded-xl'
+                            fill
+                        />
+                            : <div className='bg-gray-300 w-full h-full rounded-xl'> </div>}
                     </div>
                 </div>
             </Link>
@@ -74,7 +77,7 @@ const Post = ({ ...post }: PostProps) => {
                     {
                         getTagsForPost.isSuccess && getTagsForPost.data?.tags.map((tag) => (
                             <Link href={`/tag/${tag.id}`} key={tag.id}
-                                onClick={()=> console.log('clicked')}
+                                onClick={() => console.log('clicked')}
                                 className='rounded-2xl bg-gray-200/50 px-5 py-1.5 cursor-pointer'
                             >
                                 {tag.name}
