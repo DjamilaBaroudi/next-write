@@ -49,6 +49,7 @@ export const userRouter = createTRPCRouter({
                         title: true,
                         description: true,
                         created_at: true,
+                        featuredImage: true,
                         author: {
                             select: {
                                 name: true,
