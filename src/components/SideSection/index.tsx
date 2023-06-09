@@ -5,7 +5,7 @@ import Link from "next/link";
 const SideSection = () => {
 
     const getBookmarkedPosts = api.post.getBookmarkedPosts.useQuery();
-    const getSuggestions = api.post.getSuggestions.useQuery();
+    const getSuggestions = api.user.getSuggestions.useQuery();
     return (
         <aside className='sticky top-20 col-span-4 h-full w-full p-6 flex flex-col space-y-4'>
             {/* This is for sidebar */}

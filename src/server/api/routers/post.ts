@@ -267,67 +267,7 @@ export const postRouter = createTRPCRouter({
                 }
             })
         }),
-    getSuggestions: protectedProcedure.query(
-        async ({ ctx: { prisma, session } }) => {
-            const tagsQuery = {
-                where: {
-                    userId: session.user.id
-                },
-                select: {
-                    post: {
-                        select: {
-                            tags: {
-                                select: {
-                                    name: true
-                                }
-                            }
-                        }
-                    }
-                },
-                take: 10,
-            }
-            const likedPostsTags = await prisma.like.findMany(tagsQuery);
-            const bookmarkedPostsTags = await prisma.bookmark.findMany(tagsQuery);
-            const interestedTags: string[] = [];
-
-            likedPostsTags.forEach((like) => {
-                interestedTags.push(...like.post.tags.map((tag) => tag.name))
-            })
-            bookmarkedPostsTags.forEach((bookmark) => {
-                interestedTags.push(...bookmark.post.tags.map((tag) => tag.name))
-            })
-
-            const suggestedTagsQuery = {
-                some: {
-                    post: {
-                        tags: {
-                            some: {
-                                name: {
-                                    in: interestedTags
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-            const suggestions = await prisma.user.findMany({
-                where: {
-                    OR: [{ likes: suggestedTagsQuery }, { bookmarks: suggestedTagsQuery }],
-                    NOT: {
-                        id: session.user.id
-                    }
-                },
-                select: {
-                    id: true,
-                    name: true,
-                    image: true,
-                    username: true,
-                },
-                take: 4,
-            });
-            return suggestions
-        }
-    )
+    
     /*   getTagedPosts: publicProcedure.input(
           z.object(
               {
