@@ -249,16 +249,16 @@ export const postRouter = createTRPCRouter({
         z.object({
             imageUrl: z.string().url(),
             postId: z.string()
-        })).mutation(async ({ctx: {prisma, session}, input:{imageUrl, postId}}) => {
+        })).mutation(async ({ ctx: { prisma, session }, input: { imageUrl, postId } }) => {
             const postData = await prisma.post.findUnique({
                 where: {
                     id: postId
                 }
             })
             if (postData?.authorId !== session.user.id) {
-                throw new TRPCError({code: 'FORBIDDEN', message:'you are not the owner of this post'})
+                throw new TRPCError({ code: 'FORBIDDEN', message: 'you are not the owner of this post' })
             }
-             await prisma.post.update({
+            await prisma.post.update({
                 where: {
                     id: postId
                 },
@@ -266,57 +266,118 @@ export const postRouter = createTRPCRouter({
                     featuredImage: imageUrl
                 }
             })
-        })
-  /*   getTagedPosts: publicProcedure.input(
-        z.object(
-            {
-                tagID: z.string().optional()
-            })
-    ).query(
-        async ({ ctx: { prisma, session }, input: { tagID } }) => {
-            const posts = await prisma.post.findMany({
+        }),
+    getSuggestions: protectedProcedure.query(
+        async ({ ctx: { prisma, session } }) => {
+            const tagsQuery = {
                 where: {
-                    tags: {
-                        
-                    }
+                    userId: session.user.id
                 },
                 select: {
-                    posts: {
-                        orderBy: {
-                            created_at: 'desc'
-                        },
+                    post: {
                         select: {
-                            title: true,
-                            description: true,
-                            slug: true,
-                            id: true,
-                            created_at: true,
-                            author: {
-                                select: {
-                                    name: true,
-                                    image: true,
-                                    username: true,
-                                }
-                            },
-                            bookmarks: session?.user.id ? {
-                                where: {
-                                    userId: session?.user.id
-                                }
-                            } : false,
                             tags: {
                                 select: {
-                                    name: true,
-                                    id: true, 
-                                    slug: true,
-                                    description: true,
+                                    name: true
+                                }
+                            }
+                        }
+                    }
+                },
+                take: 10,
+            }
+            const likedPostsTags = await prisma.like.findMany(tagsQuery);
+            const bookmarkedPostsTags = await prisma.bookmark.findMany(tagsQuery);
+            const interestedTags: string[] = [];
+
+            likedPostsTags.forEach((like) => {
+                interestedTags.push(...like.post.tags.map((tag) => tag.name))
+            })
+            bookmarkedPostsTags.forEach((bookmark) => {
+                interestedTags.push(...bookmark.post.tags.map((tag) => tag.name))
+            })
+
+            const suggestedTagsQuery = {
+                some: {
+                    post: {
+                        tags: {
+                            some: {
+                                name: {
+                                    in: interestedTags
                                 }
                             }
                         }
                     }
                 }
-                })
-                
-                return posts;
-            }),*/
-}) 
+            }
+            const suggestions = await prisma.user.findMany({
+                where: {
+                    OR: [{ likes: suggestedTagsQuery }, { bookmarks: suggestedTagsQuery }],
+                    NOT: {
+                        id: session.user.id
+                    }
+                },
+                select: {
+                    id: true,
+                    name: true,
+                    image: true,
+                    username: true,
+                },
+                take: 4,
+            });
+            return suggestions
+        }
+    )
+    /*   getTagedPosts: publicProcedure.input(
+          z.object(
+              {
+                  tagID: z.string().optional()
+              })
+      ).query(
+          async ({ ctx: { prisma, session }, input: { tagID } }) => {
+              const posts = await prisma.post.findMany({
+                  where: {
+                      tags: {
+                          
+                      }
+                  },
+                  select: {
+                      posts: {
+                          orderBy: {
+                              created_at: 'desc'
+                          },
+                          select: {
+                              title: true,
+                              description: true,
+                              slug: true,
+                              id: true,
+                              created_at: true,
+                              author: {
+                                  select: {
+                                      name: true,
+                                      image: true,
+                                      username: true,
+                                  }
+                              },
+                              bookmarks: session?.user.id ? {
+                                  where: {
+                                      userId: session?.user.id
+                                  }
+                              } : false,
+                              tags: {
+                                  select: {
+                                      name: true,
+                                      id: true, 
+                                      slug: true,
+                                      description: true,
+                                  }
+                              }
+                          }
+                      }
+                  }
+                  })
+                  
+                  return posts;
+              }),*/
+})
 

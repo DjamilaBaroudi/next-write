@@ -5,27 +5,36 @@ import Link from "next/link";
 const SideSection = () => {
 
     const getBookmarkedPosts = api.post.getBookmarkedPosts.useQuery();
-
+    const getSuggestions = api.post.getSuggestions.useQuery();
     return (
         <aside className='sticky top-20 col-span-4 h-full w-full p-6 flex flex-col space-y-4'>
             {/* This is for sidebar */}
             <div className='flex flex-col space-y-4 w-full'>
                 <h3 className='my-6 font-semibold text-lg'>People you might be intereseted</h3>
                 <div className='flex flex-col space-y-4'>
-                    {Array.from({ length: 4 }).map((_, idx) =>
-                    (
-                        <div className='flex w-full items-center space-x-5' key={idx}>
-                            <div className='flex-none rounded-full bg-gray-400 h-10 w-10'></div>
-                            <div className='flex flex-col w-full'>
-                                <p className='font-bold text-sm'>Djamila BAROUDI</p>
-                                <p className='text-xs'>Frontend Developer, learner & dreamer</p>
-                            </div>
-                            <div>
-                                <button className='flex rounded items-center px-4 py-2 space-x-3 border border-gray-400
+                    {getSuggestions.isSuccess && getSuggestions.data.length > 0 &&
+                        getSuggestions.data.map((user) =>
+                        (
+                            <div className='flex w-full items-center space-x-5' key={user.id}>
+                                <div className="flex-none rounded-full bg-gray-300 h-8 w-8 relative">
+                                    {user.image && <Image
+                                        src={user.image}
+                                        alt={user.name ?? ''}
+                                        fill
+                                        className="rounded-full"
+                                    />
+                                    }
+                                </div>
+                                <div className='flex flex-col w-full'>
+                                    <p className='font-bold text-sm'>{user.name}</p>
+                                    <p className='text-xs'>{user.name}</p>
+                                </div>
+                                <div>
+                                    <button className='flex rounded items-center px-4 py-2 space-x-3 border border-gray-400
              transition hover:border-gray-900 hover:text-gray-900'>Follow</button>
+                                </div>
                             </div>
-                        </div>
-                    ))}
+                        ))}
                 </div>
             </div>
             <div>
