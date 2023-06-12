@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/restrict-template-expressions */
 import React from 'react'
 import { useContext } from 'react'
 import { MdMenu } from 'react-icons/md'
@@ -8,12 +9,14 @@ import { signIn, signOut, useSession } from 'next-auth/react';
 import Image from 'next/image'
 import { GlobalContext } from '../../contexts/GlobalContextProvider';
 import Link from 'next/link'
+import { api } from '../../utils/api'
 
 const Header = () => {
     const { status } = useSession();
     const { setIsWriteModalOpen } = useContext(GlobalContext);
 
     const currentUser = useSession();
+    const currentUsername = api.user.getCurrentUser.useQuery().data?.username;
 
     return (
         <header className='h-20 w-full flex flex-row justify-around items-center bg-white border-b-[1px] border-gray-300'>
@@ -22,7 +25,8 @@ const Header = () => {
             <Link href={'/'} className='font-thin text-xl select-none cursor-pointer'>Muslimah Chronicles</Link>
             {status === 'authenticated' ? <div className='flex items-center space-x-4'>
                 <div> <BsBell className='text-2xl text-gray-600' /> </div>
-                <div className='rounded-full relative bg-gray-400 h-7 w-7'>
+
+                <Link href={`/user/${currentUsername}`} className='rounded-full relative bg-gray-400 h-7 w-7'>
                     {currentUser.data?.user.image &&
                         <Image
                             src={currentUser.data?.user.image}
@@ -30,7 +34,7 @@ const Header = () => {
                             fill
                             className='rounded-full'
                         />}
-                </div>
+                </Link>
                 <div>
                     <button onClick={() => setIsWriteModalOpen(true)}
                         className='flex rounded items-center px-4 py-2 space-x-3 border border-gray-200

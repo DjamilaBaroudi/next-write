@@ -2,10 +2,18 @@ import React from "react";
 import { api } from "../../utils/api";
 import Image from "next/image";
 import Link from "next/link";
+import Button from "../Button";
+import toast from "react-hot-toast";
 const SideSection = () => {
 
     const getBookmarkedPosts = api.post.getBookmarkedPosts.useQuery();
     const getSuggestions = api.user.getSuggestions.useQuery();
+
+    const followUsers = api.user.followUser.useMutation({
+        onSuccess() {
+            toast.success("Followed user")
+        },
+    })
     return (
         <aside className='sticky top-20 col-span-4 h-full w-full p-6 flex flex-col space-y-4'>
             {/* This is for sidebar */}
@@ -27,11 +35,12 @@ const SideSection = () => {
                                 </div>
                                 <div className='flex flex-col w-full'>
                                     <p className='font-bold text-sm'>{user.name}</p>
-                                    <p className='text-xs'>{user.name}</p>
+                                    <p className='text-xs'>{user.username}</p>
                                 </div>
                                 <div>
-                                    <button className='flex rounded items-center px-4 py-2 space-x-3 border border-gray-400
-             transition hover:border-gray-900 hover:text-gray-900'>Follow</button>
+                                    <Button name={"Follow"} onClick={() => followUsers.mutate({
+                                        followingUserID: user.id
+                                    }) }></Button>
                                 </div>
                             </div>
                         ))}

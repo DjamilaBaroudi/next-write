@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unsafe-member-access */
 /* eslint-disable @typescript-eslint/no-unsafe-call */
 /* eslint-disable @typescript-eslint/no-floating-promises */
 /* eslint-disable @typescript-eslint/no-misused-promises */
@@ -11,6 +12,7 @@ import { RiShareForward2Fill } from 'react-icons/ri'
 import { toast } from 'react-hot-toast'
 import Post from '../../components/Post'
 import { useSession } from 'next-auth/react'
+import Modal from '../../components/Modal'
 
 
 const UserProfilePage = () => {
@@ -27,7 +29,6 @@ const UserProfilePage = () => {
     }, {
         enabled: !!router.query.username
     })
-
 
     const [objectImage, setobjectImage] = useState('');
 
@@ -68,8 +69,26 @@ const UserProfilePage = () => {
             }
         }
     }
+    const followingList = api.user.getFollowingUsers.useQuery();
+    const followersList = api.user.getFollowedByUsers.useQuery();
+
+    const [followingListPanelIsOpen, setFollowingListPanelIsOpen] = useState(false);
+    const [followersListPanelIsOpen, setFollowersListPanelIsOpen] = useState(false);
+
     return (
         <MainLayout>
+            <Modal isOpen={followingListPanelIsOpen} onClose={() => setFollowingListPanelIsOpen(false)}>
+                {followingList.isSuccess && followingList.data[0]?.following.map((user) =>
+                    <div key={user.id}>
+                        <div>{user.id}</div>
+                        <div>{user.name}</div>
+                        <div>{user.username}</div>
+                    </div>
+                )}
+            </Modal>
+            <Modal isOpen={followersListPanelIsOpen} onClose={() => setFollowersListPanelIsOpen(false)}>
+                followers list test
+            </Modal>
             <div className='w-full h-full flex justify-center items-center '>
                 <div className='flex flex-col justify-center items-center  w-full xl:max-w-screen-lg lg:max-w-screen-md my-10 p-10'>
                     <div className='bg-white rounded-3xl flex flex-col w-full shadow-md'>
@@ -112,9 +131,21 @@ const UserProfilePage = () => {
                             <div className='text-gray-500'>
                                 @{userProfile?.data?.username}
                             </div>
-                            <div className='text-gray-500'>
-                                {userProfile?.data?._count.posts ?? 0} Posts
-                            </div>
+                            {userProfile?.data &&
+                                <div className='flex flex-col items-start'>
+                                    <div className='text-gray-500'>
+                                        {userProfile?.data?._count.posts ?? 0} Posts
+                                    </div>
+                                    <div className='text-gray-500 flex justify-center items-center space-x-4 [&>*]:cursor-pointer'>
+                                        <div className='hover:text-indigo-900' onClick={() => setFollowersListPanelIsOpen(true)}>
+                                            {userProfile?.data?._count.followedBy ?? 0} Followers
+                                        </div>
+                                        <div className='hover:text-indigo-900' onClick={() => setFollowingListPanelIsOpen(true)}>
+                                            {userProfile?.data?._count.following ?? 0} Followings
+                                        </div>
+                                    </div>
+                                </div>
+                            }
                             <div>
                                 <button onClick={() => {
                                     navigator.clipboard.writeText(window.location.href);
@@ -135,7 +166,6 @@ const UserProfilePage = () => {
                         }
                     </div>
                 </div>
-
             </div>
         </MainLayout>
     )
