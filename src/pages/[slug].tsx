@@ -62,7 +62,9 @@ const PostPage = () => {
             slug={getPost.data.slug}
         ></UsplashImagesPanel>}
 
-        <Modal isOpen={selectImageModalOpen} onClose={() => setSelectImageModalOpen(false)}>
+        <Modal isOpen={selectImageModalOpen} onClose={() => setSelectImageModalOpen(false)}
+            className='max-w-screen-md'
+        >
             <div className='w-full ml-auto mr-auto max-w-md flex flex-col justify-center p-4 items-center'>
                 <div className='w-full'>
                     <button className='w-full p-5 flex items-center justify-center my-2 bg-slate-200 border rounded-lg hover:bg-slate-300 transition duration-300'>
@@ -120,10 +122,10 @@ const PostPage = () => {
                     {getPost.isSuccess && getPost.data?.featuredImage &&
                         <Image
                             src={getPost.data?.featuredImage}
-                        alt={getPost.data?.title}
-                        fill
-                        className="rounded-xl"
-                    />
+                            alt={getPost.data?.title}
+                            fill
+                            className="rounded-xl"
+                        />
                     }
                     {data?.user.id === getPost.data?.authorId && (<div onClick={() => setSelectImageModalOpen(true)}
                         className='absolute top-2 z-10 left-2 text-3xl text-gray-700 bg-slate-200 cursor-pointer rounded-md p-2 transition duration-200 hover:bg-slate-500 hover:text-white'>

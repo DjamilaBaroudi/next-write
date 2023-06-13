@@ -63,7 +63,9 @@ const WriteFormModal = ({ }) => {
 
     return (
 
-        <Modal isOpen={isWriteModalOpen} onClose={() => setIsWriteModalOpen(false)}>
+        <Modal isOpen={isWriteModalOpen} onClose={() => setIsWriteModalOpen(false)}
+        className='max-w-screen-md'
+        >
             {getTags.isSuccess &&
                 <>
                     <TagForm

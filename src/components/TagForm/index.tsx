@@ -49,7 +49,9 @@ const TagForm = ({ isOpen, onClose }: TagActionsType) => {
         createTag.mutate(data);
     }
     return (
-        <Modal isOpen={isOpen} onClose={onClose} title="New tag">
+        <Modal isOpen={isOpen} onClose={onClose} title="New tag"
+        className='max-w-screen-md'
+        >
             <form action="submit" onSubmit={handleSubmit(onTagSubmit)}>
                 <input
                     type="text"

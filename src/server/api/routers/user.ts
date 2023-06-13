@@ -189,6 +189,12 @@ export const userRouter = createTRPCRouter({
             followingUserID: z.string()
         })
     ).mutation(async ({ ctx: { prisma, session }, input: { followingUserID } }) => {
+        if (followingUserID === session.user.id) {
+            throw new TRPCError({
+                message: 'You can\'t follow your self',
+                code:'BAD_REQUEST'
+            })
+        }
         await prisma.user.update({
             where: {
                 id: session.user.id
@@ -227,7 +233,7 @@ export const userRouter = createTRPCRouter({
 
     getFollowingUsers: protectedProcedure.query(
         async ({ ctx: { prisma, session } }) => {
-            return await prisma.user.findMany({
+            return await prisma.user.findUnique({
                 where: {
                     id: session.user.id
                 },
@@ -248,7 +254,7 @@ export const userRouter = createTRPCRouter({
 
     getFollowedByUsers: protectedProcedure.query(
         async ({ ctx: { prisma, session } }) => {
-            return await prisma.user.findMany({
+            return await prisma.user.findUnique({
                 where: {
                     id: session.user.id
                 },
@@ -259,6 +265,11 @@ export const userRouter = createTRPCRouter({
                             username: true,
                             name: true,
                             image: true,
+                            followedBy: {
+                                where: {
+                                    id: session.user.id
+                                }
+                            }
 
                         }
                     }

@@ -44,7 +44,7 @@ const UsplashImagesPanel = ({ unsplashModalOpen, setUnsplashModalOpen, postId, s
     const utils = api.useContext();
     const updateFeaturedImage = api.post.updatePostFeturedImage.useMutation({
         onSuccess: () => {
-            utils.post.getPost.invalidate({slug});
+            utils.post.getPost.invalidate({ slug });
             setUnsplashModalOpen(false);
             reset();
             toast.success('Featured image succesfully updated')
@@ -52,7 +52,9 @@ const UsplashImagesPanel = ({ unsplashModalOpen, setUnsplashModalOpen, postId, s
     });
 
     return (
-        <Modal isOpen={unsplashModalOpen} onClose={() => { setUnsplashModalOpen(false) }}>
+        <Modal isOpen={unsplashModalOpen} onClose={() => { setUnsplashModalOpen(false) }}
+            className='max-w-screen-md'
+        >
             <div className='flex flex-col space-y-4 items-center justify-center'>
                 <input
                     type="text"
@@ -79,15 +81,15 @@ const UsplashImagesPanel = ({ unsplashModalOpen, setUnsplashModalOpen, postId, s
                     </div>}
                 {selectedImage &&
                     (<div>
-                    <SubmitButton name={updateFeaturedImage.isLoading ? "Loading...": "Confirm"}
-                        onClick={() => {
-                        updateFeaturedImage.mutate({
-                            imageUrl: selectedImage,
-                            postId
-                        })
-                        }}
-                        disabled={updateFeaturedImage.isLoading}
-                    />
+                        <SubmitButton name={updateFeaturedImage.isLoading ? "Loading..." : "Confirm"}
+                            onClick={() => {
+                                updateFeaturedImage.mutate({
+                                    imageUrl: selectedImage,
+                                    postId
+                                })
+                            }}
+                            disabled={updateFeaturedImage.isLoading}
+                        />
                     </div>)}
             </div>
         </Modal>

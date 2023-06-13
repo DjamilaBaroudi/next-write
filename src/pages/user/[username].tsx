@@ -13,6 +13,7 @@ import { toast } from 'react-hot-toast'
 import Post from '../../components/Post'
 import { useSession } from 'next-auth/react'
 import Modal from '../../components/Modal'
+import Button from '../../components/Button'
 
 
 const UserProfilePage = () => {
@@ -72,23 +73,102 @@ const UserProfilePage = () => {
     const followingList = api.user.getFollowingUsers.useQuery();
     const followersList = api.user.getFollowedByUsers.useQuery();
 
-    const [followingListPanelIsOpen, setFollowingListPanelIsOpen] = useState(false);
-    const [followersListPanelIsOpen, setFollowersListPanelIsOpen] = useState(false);
+    const [followListPanelIsOpen, setFollowListPanelIsOpen] = useState({
+        isOpen: false,
+        modalType: "followers"
+    });
+    const [isHovering, setIsHovering] = useState(true);
+
+    const unfollowUser = api.user.unfollowUser.useMutation({
+        onSuccess() {
+            userRoute.getFollowedByUsers.invalidate()
+            userRoute.getFollowingUsers.invalidate();
+            userRoute.getUserProfile.invalidate();
+            toast.success("User unfollowed");
+        }
+    })
+
+
+    const followUser = api.user.followUser.useMutation({
+        onSuccess() {
+            userRoute.getFollowingUsers.invalidate();
+            userRoute.getFollowedByUsers.invalidate()
+            userRoute.getUserProfile.invalidate()
+            toast.success("User followed");
+        }
+    })
+
 
     return (
         <MainLayout>
-            <Modal isOpen={followingListPanelIsOpen} onClose={() => setFollowingListPanelIsOpen(false)}>
-                {followingList.isSuccess && followingList.data[0]?.following.map((user) =>
-                    <div key={user.id}>
-                        <div>{user.id}</div>
-                        <div>{user.name}</div>
-                        <div>{user.username}</div>
-                    </div>
-                )}
-            </Modal>
-            <Modal isOpen={followersListPanelIsOpen} onClose={() => setFollowersListPanelIsOpen(false)}>
-                followers list test
-            </Modal>
+            {followingList.isSuccess && followersList.isSuccess && <Modal
+                isOpen={followListPanelIsOpen.isOpen}
+                onClose={() => setFollowListPanelIsOpen((prev) => ({ ...prev, isOpen: false }))}
+                className='max-w-md'
+            >
+                <div className='flex flex-col items-start w-full justify-center space-y-4'>
+                    {followListPanelIsOpen.modalType === "followings" &&
+                        followingList.data?.following.map((user) =>
+                            <div className='flex items-center w-full justify-center space-x-3 p-2' key={user.id}>
+                                <div className='rounded-full flex-none bg-gray-400 h-10 w-10'>
+                                    {user.image && <Image
+                                        src={user.image}
+                                        alt={user.name ?? ""}
+                                        fill
+                                        className="rounded-xl"
+                                    />
+                                    }
+                                </div>
+                                <div>{user.name}</div>
+                                <Button
+                                    className="ml-7"
+                                    name='Unfollow' onClick={() => unfollowUser.mutate({
+                                        followingUserID: user.id
+                                    })}>
+
+                                </Button>
+                            </div>
+                        )}
+                    {followListPanelIsOpen.modalType === "followers" &&
+                        followersList.data?.followedBy.map((user) =>
+                            <div className='flex max-w-lg  w-full items-center justify-center space-x-3 p-2' key={user.id}>
+                                <div className='rounded-full relative bg-gray-400 h-10 w-10'>
+                                    {user.image && <Image
+                                        src={user.image}
+                                        alt={user.name ?? ""}
+                                        fill
+                                        className="rounded-xl"
+                                    />
+                                    }
+                                </div>
+                                <div>{user.name}</div>
+                                {user.followedBy.length > 0 ?
+                                    <Button
+                                        className="ml-7"
+                                        name={isHovering ? 'Following' : 'Unfollow'}
+                                        onMouseOver={() => {
+                                            setIsHovering(false)
+                                        }}
+                                        onMouseLeave={() => {
+                                            setIsHovering(true);
+                                        }}
+                                        onClick={() => unfollowUser.mutate({
+                                            followingUserID: user.id
+                                        })}>
+
+                                    </Button> :
+                                    <Button
+                                        className="ml-7 "
+                                        name='Follow' onClick={() => followUser.mutate({
+                                            followingUserID: user.id
+                                        })}>
+
+                                    </Button>}
+                            </div>
+                        )}
+                </div>
+            </Modal>}
+
             <div className='w-full h-full flex justify-center items-center '>
                 <div className='flex flex-col justify-center items-center  w-full xl:max-w-screen-lg lg:max-w-screen-md my-10 p-10'>
                     <div className='bg-white rounded-3xl flex flex-col w-full shadow-md'>
@@ -137,10 +217,10 @@ const UserProfilePage = () => {
                                         {userProfile?.data?._count.posts ?? 0} Posts
                                     </div>
                                     <div className='text-gray-500 flex justify-center items-center space-x-4 [&>*]:cursor-pointer'>
-                                        <div className='hover:text-indigo-900' onClick={() => setFollowersListPanelIsOpen(true)}>
+                                        <div className='hover:text-indigo-900' onClick={() => setFollowListPanelIsOpen((prev) => ({ ...prev, isOpen: true, modalType: 'followers' }))}>
                                             {userProfile?.data?._count.followedBy ?? 0} Followers
                                         </div>
-                                        <div className='hover:text-indigo-900' onClick={() => setFollowingListPanelIsOpen(true)}>
+                                        <div className='hover:text-indigo-900' onClick={() => setFollowListPanelIsOpen((prev) => ({ ...prev, isOpen: true, modalType: 'followings' }))}>
                                             {userProfile?.data?._count.following ?? 0} Followings
                                         </div>
                                     </div>
@@ -167,7 +247,7 @@ const UserProfilePage = () => {
                     </div>
                 </div>
             </div>
-        </MainLayout>
+        </MainLayout >
     )
 }
 
