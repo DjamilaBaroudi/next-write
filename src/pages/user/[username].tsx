@@ -95,6 +95,9 @@ const UserProfilePage = () => {
             userRoute.getFollowedByUsers.invalidate()
             userRoute.getUserProfile.invalidate()
             toast.success("User followed");
+        },
+        onError(err) {
+            toast.error(err.message);
         }
     })
 
@@ -226,16 +229,43 @@ const UserProfilePage = () => {
                                     </div>
                                 </div>
                             }
-                            <div>
-                                <button onClick={() => {
-                                    navigator.clipboard.writeText(window.location.href);
-                                    toast.success('Url Copied to clipboard! 🥳')
-                                }}
-                                    className='flex rounded items-center mt-2 px-4 py-2 space-x-3 border border-gray-200
+                            <div className='flex w-full items-center space-x-3'>
+                                <div>
+                                    <button onClick={() => {
+                                        navigator.clipboard.writeText(window.location.href);
+                                        toast.success('Url Copied to clipboard! 🥳')
+                                    }}
+                                        className='flex mt-3 rounded items-center px-4 py-2 space-x-3 border border-gray-200
                                     transition hover:border-gray-900 hover:text-gray-900 active:scale-95'>
-                                    <div>Share</div>
-                                    <div className='text-xl text-purple-400'> <RiShareForward2Fill /> </div>
-                                </button>
+                                        <div>Share</div>
+                                        <div className='text-xl text-purple-400'> <RiShareForward2Fill /> </div>
+                                    </button>
+                                </div>
+                                <div>
+                                    {userProfile.isSuccess && userProfile.data?.followedBy
+                                        && userProfile.data?.followedBy.length > 0 ?
+                                    <Button
+                                        className="mt-3"
+                                        name={isHovering ? 'Following' : 'Unfollow'}
+                                        onMouseOver={() => {
+                                            setIsHovering(false)
+                                        }}
+                                        onMouseLeave={() => {
+                                            setIsHovering(true);
+                                        }}
+                                        onClick={() => userProfile.data?.id && unfollowUser.mutate({
+                                            followingUserID: userProfile.data?.id
+                                        })}>
+
+                                    </Button> :
+                                    <Button
+                                        className="mt-3 "
+                                        name='Follow' onClick={() => userProfile.data?.id && followUser.mutate({
+                                            followingUserID: userProfile.data?.id
+                                        })}>
+
+                                    </Button>}
+                                </div>
                             </div>
                         </div>
                     </div>

@@ -13,7 +13,7 @@ export const userRouter = createTRPCRouter({
         z.object({
             username: z.string(),
         })
-    ).query(async ({ ctx: { prisma }, input: { username } }) => {
+    ).query(async ({ ctx: { prisma, session }, input: { username } }) => {
         return await prisma.user.findUnique({
             where: {
                 username
@@ -29,8 +29,14 @@ export const userRouter = createTRPCRouter({
                         followedBy: true,
                         following: true,
                     }
-                }
+                },
+                followedBy: session?.user.id ? {
+                    where: {
+                        id: session?.user.id
+                    }
+                }: false
             }
+          
         })
     }),
 
