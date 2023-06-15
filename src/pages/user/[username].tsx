@@ -70,21 +70,31 @@ const UserProfilePage = () => {
             }
         }
     }
-    const followingList = api.user.getFollowingUsers.useQuery();
-    const followersList = api.user.getFollowedByUsers.useQuery();
+    const followingList = api.user.getFollowingUsers.useQuery(
+        {
+            userID: userProfile.data?.id as string
+        }, {
+            enabled: Boolean(userProfile.data?.id)
+        });
+    const followersList = api.user.getFollowedByUsers.useQuery({
+        userID: userProfile.data?.id as string
+    }, {
+        enabled: Boolean(userProfile.data?.id)
+    });
 
     const [followListPanelIsOpen, setFollowListPanelIsOpen] = useState({
         isOpen: false,
         modalType: "followers"
     });
     const [isHovering, setIsHovering] = useState(true);
+    const userName = userProfile.data?.name as string;
 
     const unfollowUser = api.user.unfollowUser.useMutation({
         onSuccess() {
             userRoute.getFollowedByUsers.invalidate()
             userRoute.getFollowingUsers.invalidate();
             userRoute.getUserProfile.invalidate();
-            toast.success("User unfollowed");
+            toast.success(`${userName} unfollowed`);
         }
     })
 
@@ -92,9 +102,9 @@ const UserProfilePage = () => {
     const followUser = api.user.followUser.useMutation({
         onSuccess() {
             userRoute.getFollowingUsers.invalidate();
-            userRoute.getFollowedByUsers.invalidate()
-            userRoute.getUserProfile.invalidate()
-            toast.success("User followed");
+            userRoute.getFollowedByUsers.invalidate();
+            userRoute.getUserProfile.invalidate();
+            toast.success(`${userName} followed`);
         },
         onError(err) {
             toast.error(err.message);
@@ -113,12 +123,12 @@ const UserProfilePage = () => {
                     {followListPanelIsOpen.modalType === "followings" &&
                         followingList.data?.following.map((user) =>
                             <div className='flex items-center w-full justify-center space-x-3 p-2' key={user.id}>
-                                <div className='rounded-full flex-none bg-gray-400 h-10 w-10'>
+                                <div className='rounded-full relative flex-none bg-gray-400 h-10 w-10'>
                                     {user.image && <Image
                                         src={user.image}
                                         alt={user.name ?? ""}
                                         fill
-                                        className="rounded-xl"
+                                        className="rounded-2xl"
                                     />
                                     }
                                 </div>
@@ -135,12 +145,12 @@ const UserProfilePage = () => {
                     {followListPanelIsOpen.modalType === "followers" &&
                         followersList.data?.followedBy.map((user) =>
                             <div className='flex max-w-lg  w-full items-center justify-center space-x-3 p-2' key={user.id}>
-                                <div className='rounded-full relative bg-gray-400 h-10 w-10'>
+                                <div className='rounded-full relative flex-none  bg-gray-400 h-10 w-10'>
                                     {user.image && <Image
                                         src={user.image}
                                         alt={user.name ?? ""}
                                         fill
-                                        className="rounded-xl"
+                                        className="rounded-2xl"
                                     />
                                     }
                                 </div>
@@ -244,27 +254,27 @@ const UserProfilePage = () => {
                                 <div>
                                     {userProfile.isSuccess && userProfile.data?.followedBy
                                         && userProfile.data?.followedBy.length > 0 ?
-                                    <Button
-                                        className="mt-3"
-                                        name={isHovering ? 'Following' : 'Unfollow'}
-                                        onMouseOver={() => {
-                                            setIsHovering(false)
-                                        }}
-                                        onMouseLeave={() => {
-                                            setIsHovering(true);
-                                        }}
-                                        onClick={() => userProfile.data?.id && unfollowUser.mutate({
-                                            followingUserID: userProfile.data?.id
-                                        })}>
+                                        <Button
+                                            className="mt-3"
+                                            name={isHovering ? 'Following' : 'Unfollow'}
+                                            onMouseOver={() => {
+                                                setIsHovering(false)
+                                            }}
+                                            onMouseLeave={() => {
+                                                setIsHovering(true);
+                                            }}
+                                            onClick={() => userProfile.data?.id && unfollowUser.mutate({
+                                                followingUserID: userProfile.data?.id
+                                            })}>
 
-                                    </Button> :
-                                    <Button
-                                        className="mt-3 "
-                                        name='Follow' onClick={() => userProfile.data?.id && followUser.mutate({
-                                            followingUserID: userProfile.data?.id
-                                        })}>
+                                        </Button> :
+                                        <Button
+                                            className="mt-3 "
+                                            name='Follow' onClick={() => userProfile.data?.id && followUser.mutate({
+                                                followingUserID: userProfile.data?.id
+                                            })}>
 
-                                    </Button>}
+                                        </Button>}
                                 </div>
                             </div>
                         </div>

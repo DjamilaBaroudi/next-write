@@ -34,9 +34,9 @@ export const userRouter = createTRPCRouter({
                     where: {
                         id: session?.user.id
                     }
-                }: false
+                } : false
             }
-          
+
         })
     }),
 
@@ -76,7 +76,7 @@ export const userRouter = createTRPCRouter({
             }
         })
     }),
-    getCurrentUser: protectedProcedure.query(async ({ ctx: {prisma, session}}) => {
+    getCurrentUser: protectedProcedure.query(async ({ ctx: { prisma, session } }) => {
         return await prisma.user.findUnique({
             where: {
                 id: session.user.id
@@ -198,7 +198,7 @@ export const userRouter = createTRPCRouter({
         if (followingUserID === session.user.id) {
             throw new TRPCError({
                 message: 'You can\'t follow your self',
-                code:'BAD_REQUEST'
+                code: 'BAD_REQUEST'
             })
         }
         await prisma.user.update({
@@ -237,11 +237,15 @@ export const userRouter = createTRPCRouter({
             })
         }),
 
-    getFollowingUsers: protectedProcedure.query(
-        async ({ ctx: { prisma, session } }) => {
+    getFollowingUsers: protectedProcedure.input(
+        z.object({
+            userID: z.string()
+        })
+    ).query(
+        async ({ ctx: { prisma }, input: { userID } }) => {
             return await prisma.user.findUnique({
                 where: {
-                    id: session.user.id
+                    id: userID
                 },
                 select: {
                     following: {
@@ -250,7 +254,6 @@ export const userRouter = createTRPCRouter({
                             username: true,
                             name: true,
                             image: true,
-
                         }
                     }
                 }
@@ -258,11 +261,13 @@ export const userRouter = createTRPCRouter({
         }
     ),
 
-    getFollowedByUsers: protectedProcedure.query(
-        async ({ ctx: { prisma, session } }) => {
+    getFollowedByUsers: protectedProcedure.input(z.object({
+        userID: z.string()
+    })).query(
+        async ({ ctx: { prisma, session }, input:{userID} }) => {
             return await prisma.user.findUnique({
                 where: {
-                    id: session.user.id
+                    id: userID
                 },
                 select: {
                     followedBy: {
