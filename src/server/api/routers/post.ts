@@ -16,11 +16,12 @@ export const postRouter = createTRPCRouter({
             })
         )
     ).mutation(
-        async ({ ctx: { prisma, session }, input: { title, description, text, tagsIds } }) => {
+        async ({ ctx: { prisma, session }, input: { title, description, text, tagsIds, html } }) => {
             await prisma.post.create({
                 data: {
                     title,
                     text,
+                    html,
                     description,
                     slug: slugify(title),
                     author: {
@@ -46,6 +47,7 @@ export const postRouter = createTRPCRouter({
                         title: true,
                         description: true,
                         slug: true,
+                        html: true,
                         id: true,
                         created_at: true,
                         featuredImage: true,
@@ -89,6 +91,7 @@ export const postRouter = createTRPCRouter({
                 select: {
                     id: true,
                     text: true,
+                    html: true,
                     title: true,
                     description: true,
                     likes: session?.user.id ? {
@@ -267,7 +270,7 @@ export const postRouter = createTRPCRouter({
                 }
             })
         }),
-    
+
     /*   getTagedPosts: publicProcedure.input(
           z.object(
               {

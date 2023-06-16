@@ -2,7 +2,7 @@ import React, { useState } from 'react'
 import { useContext } from 'react';
 import Modal from '../Modal'
 import { GlobalContext } from '../../contexts/GlobalContextProvider';
-import { useForm } from 'react-hook-form';
+import { Controller, useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
 import { api } from '../../utils/api';
@@ -12,6 +12,11 @@ import TagsAutocompletion from '../TagsAutocompletion';
 import TagForm from '../TagForm';
 import { AiOutlineCloseCircle } from 'react-icons/ai'
 import SubmitButton from '../Button';
+import dynamic from 'next/dynamic';
+
+const ReactQuill = dynamic(() => import('react-quill'), { ssr: false })
+
+import 'react-quill/dist/quill.snow.css';
 
 export type Tag = {
     id: string; name: string,
@@ -20,11 +25,13 @@ type WriteFormType = {
     title: string;
     description: string;
     text: string;
+    html: string;
 }
 export const WriteFormSchema = z.object({
     title: z.string().min(20),
     description: z.string().min(60),
-    text: z.string().min(100)
+    text: z.string().min(100).optional(),
+    html: z.string().min(100),
 })
 
 
@@ -34,6 +41,7 @@ const WriteFormModal = ({ }) => {
     const [selectedTags, setSelectedTags] = useState<Tag[]>([])
     const {
         reset,
+        control,
         register,
         handleSubmit,
         formState: { errors } } = useForm<WriteFormType>({
@@ -62,9 +70,8 @@ const WriteFormModal = ({ }) => {
     const getTags = api.tag.getAllTags.useQuery();
 
     return (
-
         <Modal isOpen={isWriteModalOpen} onClose={() => setIsWriteModalOpen(false)}
-        className='max-w-screen-md'
+            className='max-w-screen-md'
         >
             {getTags.isSuccess &&
                 <>
@@ -127,24 +134,38 @@ const WriteFormModal = ({ }) => {
                     placeholder='Short Description about the blog' />
                 <p className='text-red-500 w-full text-left text-sm pb-2'> {errors.description?.message}</p>
 
-                <div className='w-full'>
-                    <textarea
-                        className='border rounded-xl border-gray-300 focus:border-gray-600 w-full p-4 outline-none'
-                        {...register('text')}
-                        id="mainBody"
-                        cols={30}
-                        rows={10}
-                        placeholder="blog main body..."
-                    >
-                    </textarea>
-                    <p className='text-red-500 w-full text-left text-sm pb-2'> {errors.text?.message}</p>
-                </div>
+                {/* <textarea
+                            className='border rounded-xl border-gray-300 focus:border-gray-600 w-full p-4 outline-none'
+                            {...register('text')}
+                            id="mainBody"
+                            cols={30}
+                            rows={10}
+                            placeholder="blog main body..."
+                        >
+                        </textarea> */}
+                <Controller
+                    name="html"
+                    control={control}
+                    render={({ field }) => (
+                        <div className='w-full'>
+                            <ReactQuill
+                                theme="snow"
+                                {...field}
+                                placeholder='Write your post body here...'
+                                value={field.value}
+                                className='rounded-xl'
+                                onChange={(value)=> field.onChange(value)}
+                            />
+                        </div>)}
+                />
+
+
+                <p className='text-red-500 w-full text-left text-sm pb-2'> {errors.text?.message}</p>
                 <div className='flex justify-end w-full'>
                     <SubmitButton name="publish" />
                 </div>
             </form>
         </Modal>
-
     )
 }
 

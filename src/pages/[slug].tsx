@@ -13,6 +13,7 @@ import Modal from '../components/Modal';
 import UsplashImagesPanel from '../components/Unsplash';
 import { useSession } from 'next-auth/react';
 import Image from 'next/image';
+import { Interweave } from 'interweave';
 
 
 const PostPage = () => {
@@ -141,6 +142,9 @@ const PostPage = () => {
                 </div>
                 <div>
                     {getPost.data?.text}
+                </div>
+                <div className='prose lg:prose-xl'>
+                    <Interweave content={getPost.data?.html}></Interweave>
                 </div>
             </div>
         </div>

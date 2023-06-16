@@ -55,6 +55,7 @@ export const userRouter = createTRPCRouter({
                         id: true,
                         slug: true,
                         title: true,
+                        html: true,
                         description: true,
                         created_at: true,
                         featuredImage: true,

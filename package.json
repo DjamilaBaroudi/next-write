@@ -26,6 +26,7 @@
     "@trpc/react-query": "^10.9.0",
     "@trpc/server": "^10.9.0",
     "base64-arraybuffer": "^1.0.2",
+    "interweave": "^13.1.0",
     "is-data-uri": "^0.1.0",
     "moment": "^2.29.4",
     "next": "13.1.6",
@@ -35,6 +36,7 @@
     "react-hook-form": "^7.43.2",
     "react-hot-toast": "^2.4.0",
     "react-icons": "^4.7.1",
+    "react-quill": "^2.0.0",
     "slugify": "^1.6.5",
     "superjson": "1.9.1",
     "unsplash-js": "^7.0.18",
@@ -43,6 +45,7 @@
   },
   "devDependencies": {
     "@faker-js/faker": "^7.6.0",
+    "@tailwindcss/typography": "^0.5.9",
     "@types/node": "^18.14.2",
     "@types/prettier": "^2.7.2",
     "@types/react": "^18.0.26",
