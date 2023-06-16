@@ -4,9 +4,12 @@ import { CiSearch } from 'react-icons/ci'
 import { HiChevronDown } from 'react-icons/hi'
 import { api } from '../../utils/api'
 import Post from '../Post'
+import InfiniteScroll from 'react-infinite-scroll-component';
 
 const MainSection = () => {
-    const getPosts = api.post.getPosts.useQuery();
+    const getPosts = api.post.getPosts.useInfiniteQuery({}, {
+        getNextPageParam: (lastPage) => lastPage.nextCursor
+    });
     return (
         <main className='col-span-8 border-r border-gray-300 h-full w-full px-24'>
             <div className='flex flex-col space-y-4 w-full py-10'>
@@ -54,9 +57,22 @@ const MainSection = () => {
                     </div>
 
                 </div>}
-                {getPosts.isSuccess && getPosts.data.map((post) => (
-                    <Post key={post.id} {...post} />
-                ))}
+                <InfiniteScroll
+                    dataLength={getPosts.data?.pages.flatMap((page)=>page.posts).length ?? 0} //This is important field to render the next data
+                    next={getPosts.fetchNextPage}
+                    hasMore={Boolean(getPosts.hasNextPage)}
+                    loader={<h4>Loading...</h4>}
+                    endMessage={
+                        <p style={{ textAlign: 'center' }}>
+                            <b>Yay! You have seen it all</b>
+                        </p>
+                    }
+                    
+                >
+                    {getPosts.isSuccess && getPosts.data?.pages.flatMap((page)=>page.posts).map((post) => (
+                        <Post key={post.id} {...post} />
+                    ))}</InfiniteScroll>
+
             </div>
 
         </main >

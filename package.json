@@ -36,6 +36,7 @@
     "react-hook-form": "^7.43.2",
     "react-hot-toast": "^2.4.0",
     "react-icons": "^4.7.1",
+    "react-infinite-scroll-component": "^6.1.0",
     "react-quill": "^2.0.0",
     "slugify": "^1.6.5",
     "superjson": "1.9.1",
