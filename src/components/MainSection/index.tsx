@@ -71,7 +71,8 @@ const MainSection = () => {
                 >
                     {getPosts.isSuccess && getPosts.data?.pages.flatMap((page)=>page.posts).map((post) => (
                         <Post key={post.id} {...post} />
-                    ))}</InfiniteScroll>
+                    ))}
+                </InfiniteScroll>
 
             </div>
 

@@ -7,7 +7,7 @@ import type { RouterOutputs } from '../../utils/api';
 import { api } from '../../utils/api'
 import { useState } from 'react'
 
-type PostProps = RouterOutputs['post']['getPosts'][number];
+type PostProps = RouterOutputs['post']['getPosts']['posts'][number];
 
 const Post = ({ ...post }: PostProps) => {
 
@@ -32,7 +32,7 @@ const Post = ({ ...post }: PostProps) => {
     })
     return (
         < div key={post.id}
-            className='flex flex-col space-y-8 pb-8 border-b border-gray-300 last:border-none'>
+            className='flex flex-col space-y-8 py-8 border-b border-gray-300 last:border-none'>
 
             <Link href={`/user/${post.author.username}`} className='group flex w-full space-x-2 items-center cursor-pointer'>
                 <div className='rounded-full relative bg-gray-400 h-10 w-10'>
