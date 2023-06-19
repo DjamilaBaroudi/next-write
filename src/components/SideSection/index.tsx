@@ -51,17 +51,14 @@ const SideSection = () => {
                 <div className='flex flex-col space-y-8 w-full'>
                     {getBookmarkedPosts.isSuccess && getBookmarkedPosts.data?.map((bookmark) => (
                         <Link
-                            href={bookmark.post.slug}
+                            href={`/${bookmark.post.slug}`}
                             key={bookmark.id}
-                            className='flex items-center space-x-6 group'>
-
-                            <div className='bg-gray-300 w-2/5 aspect-square h-full rounded-2xl'>
-                            </div>
-                            <div className='flex flex-col justify-start space-y-1 w-3/5'>
-                                <div className='text-lg text-gray-900 font-semibold group-hover:underline decoration-indigo:underline'>{bookmark.post.title}</div>
+                            className='flex items-center space-x-6'>
+                            <div className='flex flex-col justify-start space-y-1 w-full pl-2 pr-4'>
+                                <div className='text-lg text-gray-900 font-semibold hover:underline decoration-indigo:underline'>{bookmark.post.title}</div>
                                 <div className='text-xs text-gray-700 truncate'>{bookmark.post.description}</div>
                                 <div>
-                                    <div className='flex w-full space-x-1 items-center'>
+                                    <Link href={`/user/${bookmark.post.author.username}`} className='flex w-full space-x-1 items-center'>
                                         <div className='rounded-full bg-gray-300 h-8 w-8 relative'>
                                             {bookmark.post.author.image && <Image
                                                 src={bookmark.post.author.image}
@@ -71,11 +68,11 @@ const SideSection = () => {
                                             />}
 
                                         </div>
-                                        <div className='flex text-sm font-semibold'>
-                                            {bookmark.post.author.name} &#x2022;
+                                        <div className='hover:underline decoration-indigo:underline flex text-sm font-semibold'>
+                                            {bookmark.post.author.name} 
                                         </div>
-                                        <div > {bookmark.post.created_at.toDateString()}</div>
-                                    </div>
+                                        <div > &#x2022; {bookmark.post.created_at.toDateString()}</div>
+                                    </Link>
                                 </div>
                             </div>
 
