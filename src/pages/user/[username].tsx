@@ -14,6 +14,7 @@ import Post from '../../components/Post'
 import { useSession } from 'next-auth/react'
 import Modal from '../../components/Modal'
 import Button from '../../components/Button'
+import WriteFormModal from '../../components/WriteFormModal'
 
 
 const UserProfilePage = () => {
@@ -74,8 +75,8 @@ const UserProfilePage = () => {
         {
             userID: userProfile.data?.id as string
         }, {
-            enabled: Boolean(userProfile.data?.id)
-        });
+        enabled: Boolean(userProfile.data?.id)
+    });
     const followersList = api.user.getFollowedByUsers.useQuery({
         userID: userProfile.data?.id as string
     }, {
@@ -287,6 +288,7 @@ const UserProfilePage = () => {
                     </div>
                 </div>
             </div>
+            <WriteFormModal />
         </MainLayout >
     )
 }
