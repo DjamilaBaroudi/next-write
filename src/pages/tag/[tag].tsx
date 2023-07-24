@@ -3,6 +3,7 @@ import React from 'react'
 import Post from '../../components/Post';
 import type { RouterOutputs } from '../../utils/api';
 import { api } from '../../utils/api';
+import MainLayout from '../../layouts/MainLayout';
 
 
 type tagProps = RouterOutputs['tag']['getAllTags'][number];
@@ -16,15 +17,17 @@ const TagsPosts = ({ ...tag }: tagProps) => {
     if (getPostsForSpecificTag.isError) return <div>Error</div>
     if (getPostsForSpecificTag.isSuccess && getPostsForSpecificTag.data)
 
-    return (
-        <div>
-            {
-                getPostsForSpecificTag.isSuccess && getPostsForSpecificTag.data.map((post) =>
-                    <Post key={tag.id} {...post} bookmarks={[]} />
-                )
-            }
-        </div>
-    )
+        return (
+            <MainLayout>
+                <div className='container flex flex-col justify-center items-center w-[60%] m-auto'>
+                    {
+                        getPostsForSpecificTag.isSuccess && getPostsForSpecificTag.data.map((post) =>
+                            <Post key={tag.id} {...post} bookmarks={[]} />
+                        )
+                    }
+                </div>
+            </MainLayout>
+        )
 }
 
 export default TagsPosts
