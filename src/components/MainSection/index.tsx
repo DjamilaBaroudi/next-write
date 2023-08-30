@@ -5,7 +5,7 @@ import { HiChevronDown } from 'react-icons/hi'
 import { api } from '../../utils/api'
 import Post from '../Post'
 import InfiniteScroll from 'react-infinite-scroll-component';
-import Button from '../Button'
+import Link from 'next/link'
 
 const MainSection = () => {
     const getPosts = api.post.getPosts.useInfiniteQuery({}, {
@@ -37,9 +37,9 @@ const MainSection = () => {
                         <div className='flex justify-center space-x-2 items-center'>
                             {
                                 mostUsedTags && mostUsedTags.map((tag, index) => (
-                                    <div key={index} className='rounded-3xl bg-gray-200/50 px-4 py-6 flex justify-center items-center h-8 w-full'>
+                                    <Link href={`/tag/${tag.id}`} key={index} className='rounded-3xl cursor-pointer bg-gray-200/50 px-4 py-6 flex justify-center items-center h-8 w-full'>
                                     <span className='text-xs'>{tag.name}</span>
-                                    </div>
+                                    </Link>
                                 ))
                             }
                         </div>
