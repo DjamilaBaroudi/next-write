@@ -22,7 +22,7 @@ const PostPage = () => {
         slug: router.query.slug as string
     },
         {
-            enabled: !!router.query.slug // fetch the post only whne it's availble, !! converts the string to boolean
+            enabled: !!router.query.slug // fetch the post only when it's availble, !! converts the string to boolean
         }
     )
     const postRoute = api.useContext().post;

@@ -282,7 +282,7 @@ const UserProfilePage = () => {
                     </div>
                     <div className='w-full my-14'>
                         {getUserPosts.isSuccess && getUserPosts.data?.posts.map((post) =>
-                            <Post tags={[]} key={post.id} {...post} />
+                            <Post key={post.id} {...post} />
                         )
                         }
                     </div>

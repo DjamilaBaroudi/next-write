@@ -66,6 +66,13 @@ export const userRouter = createTRPCRouter({
                                 username: true,
                             }
                         },
+                        tags: {
+                            select: {
+                                name: true,
+                                id: true,
+                                slug: true,
+                            }
+                        },
                         bookmarks: session?.user.id ? {
                             where: {
                                 userId: session?.user.id

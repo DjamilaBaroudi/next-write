@@ -35,7 +35,7 @@ export const tagRouter = createTRPCRouter({
             select: {
                 tags: {
                     select: {
-                        name: true, 
+                        name: true,
                         description: true,
                         slug: true,
                         id: true,
@@ -44,7 +44,18 @@ export const tagRouter = createTRPCRouter({
             }
         })
     }),
-    getAllTags: publicProcedure.query(async ({ctx: { prisma }}) => {
-        return await prisma.tag.findMany()
-    })
+    getAllTags: publicProcedure.query(async ({ ctx: { prisma } }) => {
+        return await prisma.tag.findMany({
+            select: {
+                name: true,
+                id:true,
+                _count: {
+                    select: {
+                        posts: true,
+                    }
+                }
+            },
+        })
+    }),
 })
+

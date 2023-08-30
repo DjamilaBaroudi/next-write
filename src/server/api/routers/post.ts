@@ -1,5 +1,5 @@
 import slugify from "slugify";
-import { TypeOf, z } from "zod";
+import {z} from "zod";
 import { WriteFormSchema } from "../../../components/WriteFormModal";
 import { createTRPCRouter, protectedProcedure, publicProcedure } from "../trpc";
 import { TRPCError } from "@trpc/server";
@@ -81,7 +81,7 @@ export const postRouter = createTRPCRouter({
             let nextCursor: typeof cursor | undefined = undefined
             if (posts.length > LIMIT) {
                 const nextItem = posts.pop()
-                if(nextItem) nextCursor = nextItem.id;
+                if (nextItem) nextCursor = nextItem.id;
             }
             return {
                 posts,
@@ -283,56 +283,48 @@ export const postRouter = createTRPCRouter({
             })
         }),
 
-    /*   getTagedPosts: publicProcedure.input(
-          z.object(
-              {
-                  tagID: z.string().optional()
-              })
-      ).query(
-          async ({ ctx: { prisma, session }, input: { tagID } }) => {
-              const posts = await prisma.post.findMany({
-                  where: {
-                      tags: {
-                          
-                      }
-                  },
-                  select: {
-                      posts: {
-                          orderBy: {
-                              created_at: 'desc'
-                          },
-                          select: {
-                              title: true,
-                              description: true,
-                              slug: true,
-                              id: true,
-                              created_at: true,
-                              author: {
-                                  select: {
-                                      name: true,
-                                      image: true,
-                                      username: true,
-                                  }
-                              },
-                              bookmarks: session?.user.id ? {
-                                  where: {
-                                      userId: session?.user.id
-                                  }
-                              } : false,
-                              tags: {
-                                  select: {
-                                      name: true,
-                                      id: true, 
-                                      slug: true,
-                                      description: true,
-                                  }
-                              }
-                          }
-                      }
-                  }
-                  })
-                  
-                  return posts;
-              }),*/
+    getTagedPosts: publicProcedure.input(
+        z.object(
+            {
+                tagID: z.string()
+            })
+    ).query(
+        async ({ ctx: { prisma, session }, input: { tagID } }) => {
+            const posts = await prisma.post.findMany({
+                where: {
+                    tags:
+                    {
+                        some:
+                        {
+                            id:
+                                tagID
+                        }
+                    }
+                },
+                select: {
+                    id: true,
+                    title: true,
+                    description: true,
+                    created_at: true,
+                    slug: true,
+                    featuredImage: true,
+                    html: true,
+                    author: {
+                        select: {
+                            name: true,
+                            image: true,
+                            username: true,
+                        }
+                    },
+                    tags: {
+                        select: {
+                            id: true,
+                            name: true,
+                            slug: true,
+                        }
+                    }
+                }
+            })
+            return posts;
+        }),
 })
-

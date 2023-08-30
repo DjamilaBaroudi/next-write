@@ -1,19 +1,37 @@
+/* eslint-disable @typescript-eslint/no-floating-promises */
 import React from "react";
 import { api } from "../../utils/api";
 import Image from "next/image";
 import Link from "next/link";
 import Button from "../Button";
 import toast from "react-hot-toast";
+import { useSession } from "next-auth/react";
 const SideSection = () => {
 
     const getBookmarkedPosts = api.post.getBookmarkedPosts.useQuery();
     const getSuggestions = api.user.getSuggestions.useQuery();
-
+    const currentUser = useSession();
+    const userRouter = api.useContext().user;
     const followUsers = api.user.followUser.useMutation({
         onSuccess() {
             toast.success("Followed user")
+            userRouter.getFollowingUsers.invalidate();
+        },
+        onError() {
+            toast.error("You are already following this user")
         },
     })
+    const unfollowUsers = api.user.unfollowUser.useMutation({
+        onSuccess() {
+            toast.success("User unfollowed")
+            userRouter.getFollowingUsers.invalidate();
+        },
+        onError() {
+            toast.error("You are not following this user")
+        },
+    })
+    const userID = currentUser.data?.user.id as string;
+    const followedUsers = api.user.getFollowingUsers.useQuery({ userID })
     return (
         <aside className='sticky top-20 col-span-4 h-full w-full p-6 flex flex-col space-y-4'>
             {/* This is for sidebar */}
@@ -22,6 +40,7 @@ const SideSection = () => {
                 <div className='flex flex-col space-y-4'>
                     {getSuggestions.isSuccess && getSuggestions.data.length > 0 &&
                         getSuggestions.data.map((user) =>
+
                         (
                             <div className='flex w-full items-center space-x-5' key={user.id}>
                                 <div className="flex-none rounded-full bg-gray-300 h-8 w-8 relative">
@@ -38,9 +57,14 @@ const SideSection = () => {
                                     <p className='text-xs'>{user.username}</p>
                                 </div>
                                 <div>
-                                    <Button name={"Follow"} onClick={() => followUsers.mutate({
+                                    {/* Needs two different buttons, fowllow/unfollow or don't display followed authors */}
+                                    {followedUsers.data?.following && followedUsers.data?.following.some((followedUser) => followedUser.id === user.id)?
+                                        <Button name={ "Unfollow" } onClick={() => unfollowUsers.mutate({
                                         followingUserID: user.id
-                                    }) }></Button>
+                                    })}></Button>:
+                                    <Button name={ "Follow"} onClick={() => followUsers.mutate({
+                                        followingUserID: user.id
+                                    })}></Button>}
                                 </div>
                             </div>
                         ))}
@@ -69,7 +93,7 @@ const SideSection = () => {
 
                                         </div>
                                         <div className='hover:underline decoration-indigo:underline flex text-sm font-semibold'>
-                                            {bookmark.post.author.name} 
+                                            {bookmark.post.author.name}
                                         </div>
                                         <div > &#x2022; {bookmark.post.created_at.toDateString()}</div>
                                     </Link>
