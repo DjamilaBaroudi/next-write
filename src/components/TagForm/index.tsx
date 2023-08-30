@@ -12,7 +12,7 @@ type TagFormType = {
     description: string;
 }
 export const TagFormSchema = z.object({
-    name: z.string().min(3),
+    name: z.string().min(3).max(24),
     description: z.string().min(10)
 })
 
