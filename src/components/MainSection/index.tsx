@@ -35,7 +35,7 @@ const MainSection = () => {
                     <div className='inline-flex items-center w-full space-x-4 justify-end text-xs font-bold leading-sm uppercase px-3 py-1 rounded-full'>
                         <div>topics: </div>
                         
-                            <div className='flex flex-wrap justify-center space-x-2 items-center'>
+                            <div className='flex flex-wrap justify-center space-x-2 items-center lg:flex-nowrap'>
                             {
                                 mostUsedTags && mostUsedTags.map((tag, index) => (
                                     <Link href={`/tag/${tag.id}`} key={index} className='rounded-3xl cursor-pointer bg-gray-200/50 my-1 max-w-xs px-4 py-6 flex justify-center items-center h-8 md:w-full'>
