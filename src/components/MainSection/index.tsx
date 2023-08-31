@@ -18,9 +18,9 @@ const MainSection = () => {
  
 
     return (
-        <main className='col-span-8 border-r border-gray-300 h-full w-full px-24'>
+        <main className='md:col-span-8 col-span-12 items-center md:border-r border-gray-300 h-full w-full md:px-24 '>
             <div className='flex flex-col space-y-4 w-full py-10'>
-                <div className='flex space-x-4 items-center w-full'>
+                <div className='flex flex-col space-x-4 items-center md:w-full lg:flex-row'>
                     <label htmlFor="search" className='relative w-full border-gray-800 border rounded-3xl'>
                         <div className='absolute left-2 h-full flex items-center'>
                             <CiSearch />
@@ -29,20 +29,22 @@ const MainSection = () => {
                             type="text"
                             name="search"
                             id="search"
-                            className='outline-none py-1 px-4 pl-7 ml-2 my-0.5 text-sm placeholder:text-xs placeholder:text-gray-300'
+                            className='outline-none py-1 px-4 pl-7 ml-2 my-0.5 text-md placeholder:text-xs placeholder:text-gray-300'
                             placeholder='Search...' />
                     </label>
                     <div className='inline-flex items-center w-full space-x-4 justify-end text-xs font-bold leading-sm uppercase px-3 py-1 rounded-full'>
                         <div>topics: </div>
-                        <div className='flex justify-center space-x-2 items-center'>
+                        
+                            <div className='flex flex-wrap justify-center space-x-2 items-center'>
                             {
                                 mostUsedTags && mostUsedTags.map((tag, index) => (
-                                    <Link href={`/tag/${tag.id}`} key={index} className='rounded-3xl cursor-pointer bg-gray-200/50 px-4 py-6 flex justify-center items-center h-8 w-full'>
+                                    <Link href={`/tag/${tag.id}`} key={index} className='rounded-3xl cursor-pointer bg-gray-200/50 my-1 max-w-xs px-4 py-6 flex justify-center items-center h-8 md:w-full'>
                                     <span className='text-xs'>{tag.name}</span>
                                     </Link>
                                 ))
                             }
-                        </div>
+                            </div>
+                        
                     </div>
                 </div>
                 <div className='w-full justify-between flex items-center border-b pb-8 border-gray-300'>

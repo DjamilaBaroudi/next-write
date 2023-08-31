@@ -33,7 +33,7 @@ const SideSection = () => {
     const userID = currentUser.data?.user.id as string;
     const followedUsers = api.user.getFollowingUsers.useQuery({ userID })
     return (
-        <aside className='sticky top-20 col-span-4 h-full w-full p-6 flex flex-col space-y-4'>
+        <aside className='hidden md:sticky md:top-20 md:col-span-4 md:h-full md:w-full p-6 md:flex md:flex-col space-y-4'>
             {/* This is for sidebar */}
             <div className='flex flex-col space-y-4 w-full'>
                 <h3 className='my-6 font-semibold text-lg'>People you might be intereseted</h3>

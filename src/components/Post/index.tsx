@@ -55,8 +55,8 @@ const Post = ({ ...post }: PostProps) => {
                 </div>
             </Link>
             <Link href={`/${post.slug}`}>
-                <div className='group grid grid-cols-12 w-full min-h-[6rem] gap-4'>
-                    <div className='col-span-8 flex flex-col space-y-4'>
+                <div className='group grid lg:grid-cols-12 w-full min-h-[6rem] gap-4'>
+                    <div className='lg:col-span-8 flex flex-col space-y-4'>
                         <p className='text-2xl font-bold group-hover:underline decoration-indigo-600 text-gray-800'>
                             {post.title}
                         </p>
@@ -64,7 +64,7 @@ const Post = ({ ...post }: PostProps) => {
                             {post.description}
                         </p>
                     </div>
-                    <div className='col-span-4 w-full h-full rounded-xl transition hover:scale-105 transform duration-300 hover:shadow-xl'>
+                    <div className='lg:col-span-4 flex w-full h-full rounded-xl transition hover:scale-105 transform duration-300 hover:shadow-xl'>
                         {post.featuredImage ? <Image src={post.featuredImage} alt={post.title} className='rounded-xl'
                             fill
                         />
